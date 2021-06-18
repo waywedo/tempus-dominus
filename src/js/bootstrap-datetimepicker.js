@@ -5,6 +5,11 @@
  */
 import $ from "jquery";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import objectSupport from "dayjs/plugin/objectSupport";
+
+dayjs.extend(objectSupport);
+dayjs.extend(customParseFormat);
 
 var dateTimePicker = function (element, options) {
     var picker = {},
@@ -87,13 +92,13 @@ var dateTimePicker = function (element, options) {
             var returnMoment;
 
             if (d === undefined || d === null) {
-                returnMoment = moment(); //TODO should this use format? and locale?
-            } else if (moment.isDate(d) || moment.isMoment(d)) {
+                returnMoment = dayjs(); //TODO should this use format? and locale?
+            } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
                 // If the date that is passed in is already a Date() or moment() object,
                 // pass it directly to moment.
-                returnMoment = moment(d);
+                returnMoment = dayjs(d);
             } else {
-                returnMoment = moment(d, parseFormats, options.useStrict);
+                returnMoment = dayjs(d, parseFormats, options.useStrict);
             }
 
             return returnMoment;
@@ -614,8 +619,7 @@ var dateTimePicker = function (element, options) {
                         : position.top + element.outerHeight(),
                 bottom:
                     vertical === "top"
-                        ? parent.outerHeight() -
-                          (parent === element ? 0 : position.top)
+                        ? parent.outerHeight() - (parent === element ? 0 : position.top)
                         : "auto",
                 left:
                     horizontal === "left"
@@ -626,9 +630,7 @@ var dateTimePicker = function (element, options) {
                 right:
                     horizontal === "left"
                         ? "auto"
-                        : parent.outerWidth() -
-                          element.outerWidth() -
-                          (parent === element ? 0 : position.left),
+                        : parent.outerWidth() - element.outerWidth() - (parent === element ? 0 : position.left),
             });
         },
         notifyEvent = function (e) {
@@ -870,7 +872,7 @@ var dateTimePicker = function (element, options) {
         updateDecades = function () {
             var decadesView = widget.find(".datepicker-decades"),
                 decadesViewHeader = decadesView.find("th"),
-                startDecade = moment({
+                startDecade = dayjs({
                     y: viewDate.year() - (viewDate.year() % 100) - 1,
                 }),
                 endDecade = startDecade.clone().add(100, "y"),
@@ -892,7 +894,7 @@ var dateTimePicker = function (element, options) {
             decadesView.find(".disabled").removeClass("disabled");
 
             if (
-                startDecade.isSame(moment({ y: 1900 })) ||
+                startDecade.isSame(dayjs({ y: 1900 })) ||
                 (options.minDate && options.minDate.isAfter(startDecade, "y"))
             ) {
                 decadesViewHeader.eq(0).addClass("disabled");
@@ -903,7 +905,7 @@ var dateTimePicker = function (element, options) {
                 .text(startDecade.year() + "-" + endDecade.year());
 
             if (
-                startDecade.isSame(moment({ y: 2000 })) ||
+                startDecade.isSame(dayjs({ y: 2000 })) ||
                 (options.maxDate && options.maxDate.isBefore(endDecade, "y"))
             ) {
                 decadesViewHeader.eq(2).addClass("disabled");
@@ -1271,7 +1273,7 @@ var dateTimePicker = function (element, options) {
         },
         parseInputDate = function (inputDate) {
             if (options.parseInputDate === undefined) {
-                if (!moment.isMoment(inputDate) || inputDate instanceof Date) {
+                if (!dayjs.isDayjs(inputDate) || inputDate instanceof Date) {
                     inputDate = getMoment(inputDate);
                 }
             } else {
@@ -1770,13 +1772,12 @@ var dateTimePicker = function (element, options) {
             var format = options.format || "L LT";
 
             actualFormat = format.replace(
+                // eslint-disable-next-line no-useless-escape
                 /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,
                 function (formatInput) {
-                    var newinput =
-                        date.localeData().longDateFormat(formatInput) ||
-                        formatInput;
-                    // eslint-disable-next-line no-useless-escape
+                    var newinput = date.localeData().longDateFormat(formatInput) || formatInput;
                     return newinput.replace(
+                        // eslint-disable-next-line no-useless-escape
                         /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,
                         function (formatInput2) {
                             //temp fix for #740
@@ -1919,7 +1920,7 @@ var dateTimePicker = function (element, options) {
         if (
             newDate !== null &&
             typeof newDate !== "string" &&
-            !moment.isMoment(newDate) &&
+            !dayjs.isDayjs(newDate) &&
             !(newDate instanceof Date)
         ) {
             throw new TypeError(
@@ -2107,7 +2108,7 @@ var dateTimePicker = function (element, options) {
         }
 
         if (typeof maxDate === "string") {
-            if (maxDate === "now" || maxDate === "moment") {
+            if (maxDate === "now" || maxDate === "dayjs") {
                 maxDate = getMoment();
             }
         }
@@ -2205,7 +2206,7 @@ var dateTimePicker = function (element, options) {
         }
 
         if (typeof defaultDate === "string") {
-            if (defaultDate === "now" || defaultDate === "moment") {
+            if (defaultDate === "now" || defaultDate === "dayjs") {
                 defaultDate = getMoment();
             } else {
                 defaultDate = getMoment(defaultDate);
@@ -2231,33 +2232,6 @@ var dateTimePicker = function (element, options) {
             input.val().trim() === ""
         ) {
             setValue(options.defaultDate);
-        }
-        return picker;
-    };
-
-    picker.locale = function (locale) {
-        if (arguments.length === 0) {
-            return options.locale;
-        }
-
-        if (!moment.localeData(locale)) {
-            throw new TypeError(
-                "locale() locale " +
-                    locale +
-                    " is not loaded from moment locales!"
-            );
-        }
-
-        options.locale = locale;
-        date.locale(options.locale);
-        viewDate.locale(options.locale);
-
-        if (actualFormat) {
-            initFormatting(); // reinit formatting
-        }
-        if (widget) {
-            hide();
-            show();
         }
         return picker;
     };
@@ -2822,7 +2796,7 @@ var dateTimePicker = function (element, options) {
 
         if (
             typeof newDate !== "string" &&
-            !moment.isMoment(newDate) &&
+            !dayjs.isDayjs(newDate) &&
             !(newDate instanceof Date)
         ) {
             throw new TypeError(
@@ -2898,27 +2872,6 @@ var dateTimePicker = function (element, options) {
  *
  ********************************************************************************/
 
-/**
- * See (http://jquery.com/).
- * @name jQuery
- * @class
- * See the jQuery Library  (http://jquery.com/) for full details.  This just
- * documents the function and classes that are added to jQuery by this plug-in.
- */
-/**
- * See (http://jquery.com/)
- * @name fn
- * @class
- * See the jQuery Library  (http://jquery.com/) for full details.  This just
- * documents the function and classes that are added to jQuery by this plug-in.
- * @memberOf jQuery
- */
-/**
- * Show comments
- * @class datetimepicker
- * @memberOf jQuery.fn
- * @param {object} options Picker options
- */
 $.fn.datetimepicker = function (options) {
     options = options || {};
 
@@ -2977,7 +2930,6 @@ $.fn.datetimepicker.defaults = {
     maxDate: false,
     useCurrent: true,
     collapse: true,
-    locale: moment.locale(),
     defaultDate: false,
     disabledDates: false,
     enabledDates: false,
