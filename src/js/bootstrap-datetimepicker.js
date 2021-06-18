@@ -92,7 +92,7 @@ var dateTimePicker = function (element, options) {
             var returnMoment;
 
             if (d === undefined || d === null) {
-                returnMoment = dayjs(); //TODO should this use format? and locale?
+                returnMoment = dayjs();
             } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
                 // If the date that is passed in is already a Date() or moment() object,
                 // pass it directly to moment.
@@ -1176,7 +1176,7 @@ var dateTimePicker = function (element, options) {
                 return;
             }
 
-            targetMoment = targetMoment.clone().locale(options.locale);
+            targetMoment = targetMoment.clone();
 
             if (options.stepping !== 1) {
                 targetMoment
@@ -1279,7 +1279,7 @@ var dateTimePicker = function (element, options) {
             } else {
                 inputDate = options.parseInputDate(inputDate);
             }
-            //inputDate.locale(options.locale);
+
             return inputDate;
         },
         /********************************************************************************
@@ -1769,36 +1769,13 @@ var dateTimePicker = function (element, options) {
                 : false;
         },
         initFormatting = function () {
-            var format = options.format || "L LT";
-
-            actualFormat = format.replace(
-                // eslint-disable-next-line no-useless-escape
-                /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,
-                function (formatInput) {
-                    var newinput = date.localeData().longDateFormat(formatInput) || formatInput;
-                    return newinput.replace(
-                        // eslint-disable-next-line no-useless-escape
-                        /(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,
-                        function (formatInput2) {
-                            //temp fix for #740
-                            return (
-                                date
-                                    .localeData()
-                                    .longDateFormat(formatInput2) ||
-                                formatInput2
-                            );
-                        }
-                    );
-                }
-            );
+            actualFormat = options.format || "DD/MM/YYYY 'h:mm A";
 
             parseFormats = options.extraFormats
                 ? options.extraFormats.slice()
                 : [];
-            if (
-                parseFormats.indexOf(format) < 0 &&
-                parseFormats.indexOf(actualFormat) < 0
-            ) {
+
+            if (parseFormats.indexOf(actualFormat) < 0) {
                 parseFormats.push(actualFormat);
             }
 
