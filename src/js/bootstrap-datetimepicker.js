@@ -673,17 +673,17 @@ var dateTimePicker = function (element, options) {
         },
         fillDow = function () {
             var row = $("<tr>"),
-                currentDate = viewDate.clone().startOf("w").startOf("d");
+                currentDate = viewDate.startOf("w").startOf("d");
 
             if (options.calendarWeeks === true) {
                 row.append($("<th>").addClass("cw").text("#"));
             }
 
-            while (currentDate.isBefore(viewDate.clone().endOf("w"))) {
+            while (currentDate.isBefore(viewDate.endOf("w"))) {
                 row.append(
                     $("<th>").addClass("dow").text(currentDate.format("dd"))
                 );
-                currentDate.add(1, "d");
+                currentDate = currentDate.add(1, "d");
             }
             widget.find(".datepicker-days thead").append(row);
         },
@@ -777,7 +777,7 @@ var dateTimePicker = function (element, options) {
         },
         fillMonths = function () {
             var spans = [],
-                monthsShort = viewDate.clone().startOf("y").startOf("d");
+                monthsShort = viewDate.startOf("y").startOf("d");
             while (monthsShort.isSame(viewDate, "y")) {
                 spans.push(
                     $("<span>")
@@ -785,7 +785,7 @@ var dateTimePicker = function (element, options) {
                         .addClass("month")
                         .text(monthsShort.format("MMM"))
                 );
-                monthsShort.add(1, "M");
+                monthsShort = monthsShort.add(1, "M");
             }
             widget.find(".datepicker-months td").empty().append(spans);
         },
@@ -806,13 +806,13 @@ var dateTimePicker = function (element, options) {
 
             monthsView.find(".disabled").removeClass("disabled");
 
-            if (!isValid(viewDate.clone().subtract(1, "y"), "y")) {
+            if (!isValid(viewDate.subtract(1, "y"), "y")) {
                 monthsViewHeader.eq(0).addClass("disabled");
             }
 
             monthsViewHeader.eq(1).text(viewDate.year());
 
-            if (!isValid(viewDate.clone().add(1, "y"), "y")) {
+            if (!isValid(viewDate.add(1, "y"), "y")) {
                 monthsViewHeader.eq(2).addClass("disabled");
             }
 
@@ -830,8 +830,8 @@ var dateTimePicker = function (element, options) {
         updateYears = function () {
             var yearsView = widget.find(".datepicker-years"),
                 yearsViewHeader = yearsView.find("th"),
-                startYear = viewDate.clone().subtract(5, "y"),
-                endYear = viewDate.clone().add(6, "y"),
+                startYear = viewDate.subtract(5, "y"),
+                endYear = viewDate.add(6, "y"),
                 html = "";
 
             yearsViewHeader
@@ -864,7 +864,7 @@ var dateTimePicker = function (element, options) {
                     "\">" +
                     startYear.year() +
                     "</span>";
-                startYear.add(1, "y");
+                startYear = startYear.add(1, "y");
             }
 
             yearsView.find("td").html(html);
@@ -875,7 +875,7 @@ var dateTimePicker = function (element, options) {
                 startDecade = dayjs({
                     y: viewDate.year() - (viewDate.year() % 100) - 1,
                 }),
-                endDecade = startDecade.clone().add(100, "y"),
+                endDecade = startDecade.add(100, "y"),
                 startedAt = startDecade.clone(),
                 minDateDecade = false,
                 maxDateDecade = false,
@@ -938,7 +938,7 @@ var dateTimePicker = function (element, options) {
                     " - " +
                     (startDecade.year() + 12) +
                     "</span>";
-                startDecade.add(12, "y");
+                startDecade = startDecade.add(12, "y");
             }
             html += "<span></span><span></span><span></span>"; //push the dangling block over, at least this way it's even
 
@@ -975,22 +975,21 @@ var dateTimePicker = function (element, options) {
                 .eq(1)
                 .text(viewDate.format(options.dayViewHeaderFormat));
 
-            if (!isValid(viewDate.clone().subtract(1, "M"), "M")) {
+            if (!isValid(viewDate.subtract(1, "M"), "M")) {
                 daysViewHeader.eq(0).addClass("disabled");
             }
-            if (!isValid(viewDate.clone().add(1, "M"), "M")) {
+            if (!isValid(viewDate.add(1, "M"), "M")) {
                 daysViewHeader.eq(2).addClass("disabled");
             }
 
             currentDate = viewDate
-                .clone()
                 .startOf("M")
                 .startOf("w")
                 .startOf("d");
 
             for (i = 0; i < 42; i++) {
                 //always display 42 days (should show 6 weeks)
-                if (currentDate.weekday() === 0) {
+                if (currentDate.day() === 0) {
                     row = $("<tr>");
                     if (options.calendarWeeks) {
                         row.append(
@@ -1032,7 +1031,7 @@ var dateTimePicker = function (element, options) {
                         currentDate.date() +
                         "</td>"
                 );
-                currentDate.add(1, "d");
+                currentDate = currentDate.add(1, "d");
             }
 
             daysView.find("tbody").empty().append(html);
@@ -1045,7 +1044,7 @@ var dateTimePicker = function (element, options) {
         },
         fillHours = function () {
             var table = widget.find(".timepicker-hours table"),
-                currentHour = viewDate.clone().startOf("d"),
+                currentHour = viewDate.startOf("d"),
                 html = [],
                 row = $("<tr>");
 
@@ -1069,13 +1068,13 @@ var dateTimePicker = function (element, options) {
                         currentHour.format(use24Hours ? "HH" : "hh") +
                         "</td>"
                 );
-                currentHour.add(1, "h");
+                currentHour = currentHour.add(1, "h");
             }
             table.empty().append(html);
         },
         fillMinutes = function () {
             var table = widget.find(".timepicker-minutes table"),
-                currentMinute = viewDate.clone().startOf("h"),
+                currentMinute = viewDate.startOf("h"),
                 html = [],
                 row = $("<tr>"),
                 step = options.stepping === 1 ? 5 : options.stepping;
@@ -1092,13 +1091,13 @@ var dateTimePicker = function (element, options) {
                         currentMinute.format("mm") +
                         "</td>"
                 );
-                currentMinute.add(step, "m");
+                currentMinute = currentMinute.add(step, "m");
             }
             table.empty().append(html);
         },
         fillSeconds = function () {
             var table = widget.find(".timepicker-seconds table"),
-                currentSecond = viewDate.clone().startOf("m"),
+                currentSecond = viewDate.startOf("m"),
                 html = [],
                 row = $("<tr>");
 
@@ -1114,7 +1113,7 @@ var dateTimePicker = function (element, options) {
                         currentSecond.format("ss") +
                         "</td>"
                 );
-                currentSecond.add(5, "s");
+                currentSecond = currentSecond.add(5, "s");
             }
 
             table.empty().append(html);
@@ -1128,7 +1127,7 @@ var dateTimePicker = function (element, options) {
 
             if (!use24Hours) {
                 toggle = widget.find(".timepicker [data-action=togglePeriod]");
-                newDate = date.clone().add(date.hours() >= 12 ? -12 : 12, "h");
+                newDate = date.add(date.hour() >= 12 ? -12 : 12, "h");
 
                 toggle.text(date.format("A"));
 
@@ -1180,17 +1179,17 @@ var dateTimePicker = function (element, options) {
 
             if (options.stepping !== 1) {
                 targetMoment
-                    .minutes(
-                        Math.round(targetMoment.minutes() / options.stepping) *
+                    .minute(
+                        Math.round(targetMoment.minute() / options.stepping) *
                             options.stepping
                     )
-                    .seconds(0);
+                    .second(0);
 
                 while (
                     options.minDate &&
                     targetMoment.isBefore(options.minDate)
                 ) {
-                    targetMoment.add(options.stepping, "minutes");
+                    targetMoment = targetMoment.add(options.stepping, "minutes");
                 }
             }
 
@@ -1290,14 +1289,14 @@ var dateTimePicker = function (element, options) {
         actions = {
             next: function () {
                 var navFnc = datePickerModes[currentViewMode].navFnc;
-                viewDate.add(datePickerModes[currentViewMode].navStep, navFnc);
+                viewDate = viewDate.add(datePickerModes[currentViewMode].navStep, navFnc);
                 fillDate();
                 viewUpdate(navFnc);
             },
 
             previous: function () {
                 var navFnc = datePickerModes[currentViewMode].navFnc;
-                viewDate.subtract(
+                viewDate = viewDate.subtract(
                     datePickerModes[currentViewMode].navStep,
                     navFnc
                 );
@@ -1365,10 +1364,10 @@ var dateTimePicker = function (element, options) {
             selectDay: function (e) {
                 var day = viewDate.clone();
                 if ($(e.target).is(".old")) {
-                    day.subtract(1, "M");
+                    day = day.subtract(1, "M");
                 }
                 if ($(e.target).is(".new")) {
-                    day.add(1, "M");
+                    day = day.add(1, "M");
                 }
                 setValue(day.date(parseInt($(e.target).text(), 10)));
                 if (!hasTime() && !options.keepOpen && !options.inline) {
@@ -1377,49 +1376,49 @@ var dateTimePicker = function (element, options) {
             },
 
             incrementHours: function () {
-                var newDate = date.clone().add(1, "h");
+                var newDate = date.add(1, "h");
                 if (isValid(newDate, "h")) {
                     setValue(newDate);
                 }
             },
 
             incrementMinutes: function () {
-                var newDate = date.clone().add(options.stepping, "m");
+                var newDate = date.add(options.stepping, "m");
                 if (isValid(newDate, "m")) {
                     setValue(newDate);
                 }
             },
 
             incrementSeconds: function () {
-                var newDate = date.clone().add(1, "s");
+                var newDate = date.add(1, "s");
                 if (isValid(newDate, "s")) {
                     setValue(newDate);
                 }
             },
 
             decrementHours: function () {
-                var newDate = date.clone().subtract(1, "h");
+                var newDate = date.subtract(1, "h");
                 if (isValid(newDate, "h")) {
                     setValue(newDate);
                 }
             },
 
             decrementMinutes: function () {
-                var newDate = date.clone().subtract(options.stepping, "m");
+                var newDate = date.subtract(options.stepping, "m");
                 if (isValid(newDate, "m")) {
                     setValue(newDate);
                 }
             },
 
             decrementSeconds: function () {
-                var newDate = date.clone().subtract(1, "s");
+                var newDate = date.subtract(1, "s");
                 if (isValid(newDate, "s")) {
                     setValue(newDate);
                 }
             },
 
             togglePeriod: function () {
-                setValue(date.clone().add(date.hours() >= 12 ? -12 : 12, "h"));
+                setValue(date.add(date.hour() >= 12 ? -12 : 12, "h"));
             },
 
             togglePicker: function (e) {
@@ -1486,7 +1485,7 @@ var dateTimePicker = function (element, options) {
                 var hour = parseInt($(e.target).text(), 10);
 
                 if (!use24Hours) {
-                    if (date.hours() >= 12) {
+                    if (date.hour() >= 12) {
                         if (hour !== 12) {
                             hour += 12;
                         }
@@ -2061,7 +2060,7 @@ var dateTimePicker = function (element, options) {
         if (options.useCurrent && !options.keepInvalid) {
             var tries = 0;
             while (!isValid(date, "d")) {
-                date.add(1, "d");
+                date = date.add(1, "d");
                 if (tries === 31) {
                     throw "Tried 31 times to find a valid date";
                 }
@@ -2112,7 +2111,7 @@ var dateTimePicker = function (element, options) {
             setValue(options.maxDate);
         }
         if (viewDate.isAfter(parsedDate)) {
-            viewDate = parsedDate.clone().subtract(options.stepping, "m");
+            viewDate = parsedDate.subtract(options.stepping, "m");
         }
         update();
         return picker;
@@ -2157,7 +2156,7 @@ var dateTimePicker = function (element, options) {
             setValue(options.minDate);
         }
         if (viewDate.isBefore(parsedDate)) {
-            viewDate = parsedDate.clone().add(options.stepping, "m");
+            viewDate = parsedDate.add(options.stepping, "m");
         }
         update();
         return picker;
@@ -2702,7 +2701,7 @@ var dateTimePicker = function (element, options) {
         if (options.useCurrent && !options.keepInvalid) {
             var tries = 0;
             while (!isValid(date, "h")) {
-                date.add(1, "h");
+                date = date.add(1, "h");
                 if (tries === 24) {
                     throw "Tried 24 times to find a valid date";
                 }
@@ -2742,7 +2741,7 @@ var dateTimePicker = function (element, options) {
         if (options.useCurrent && !options.keepInvalid) {
             var tries = 0;
             while (!isValid(date, "h")) {
-                date.add(1, "h");
+                date = date.add(1, "h");
                 if (tries === 24) {
                     throw "Tried 24 times to find a valid date";
                 }
@@ -2975,9 +2974,9 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getMoment();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.clone().subtract(7, "d"));
+                this.date(d.subtract(7, "d"));
             } else {
-                this.date(d.clone().add(this.stepping(), "m"));
+                this.date(d.add(this.stepping(), "m"));
             }
         },
         down: function (widget) {
@@ -2987,9 +2986,9 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getMoment();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.clone().add(7, "d"));
+                this.date(d.add(7, "d"));
             } else {
-                this.date(d.clone().subtract(this.stepping(), "m"));
+                this.date(d.subtract(this.stepping(), "m"));
             }
         },
         "control up": function (widget) {
@@ -2998,9 +2997,9 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getMoment();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.clone().subtract(1, "y"));
+                this.date(d.subtract(1, "y"));
             } else {
-                this.date(d.clone().add(1, "h"));
+                this.date(d.add(1, "h"));
             }
         },
         "control down": function (widget) {
@@ -3009,9 +3008,9 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getMoment();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.clone().add(1, "y"));
+                this.date(d.add(1, "y"));
             } else {
-                this.date(d.clone().subtract(1, "h"));
+                this.date(d.subtract(1, "h"));
             }
         },
         left: function (widget) {
@@ -3020,7 +3019,7 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getMoment();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.clone().subtract(1, "d"));
+                this.date(d.subtract(1, "d"));
             }
         },
         right: function (widget) {
@@ -3029,7 +3028,7 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getMoment();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.clone().add(1, "d"));
+                this.date(d.add(1, "d"));
             }
         },
         pageUp: function (widget) {
@@ -3038,7 +3037,7 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getMoment();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.clone().subtract(1, "M"));
+                this.date(d.subtract(1, "M"));
             }
         },
         pageDown: function (widget) {
@@ -3047,7 +3046,7 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getMoment();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.clone().add(1, "M"));
+                this.date(d.add(1, "M"));
             }
         },
         enter: function () {
