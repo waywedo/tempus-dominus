@@ -88,20 +88,20 @@ var dateTimePicker = function (element, options) {
          *
          ********************************************************************************/
 
-        getMoment = function (d) {
-            var returnMoment;
+        getDayJs = function (d) {
+            var returnDayJs;
 
             if (d === undefined || d === null) {
-                returnMoment = dayjs();
+                returnDayJs = dayjs();
             } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
-                // If the date that is passed in is already a Date() or moment() object,
-                // pass it directly to moment.
-                returnMoment = dayjs(d);
+                // If the date that is passed in is already a Date() or dayjs() object,
+                // pass it directly to dayjs.
+                returnDayJs = dayjs(d);
             } else {
-                returnMoment = dayjs(d, parseFormats, options.useStrict);
+                returnDayJs = dayjs(d, parseFormats, options.useStrict);
             }
 
-            return returnMoment;
+            return returnDayJs;
         },
         isEnabled = function (granularity) {
             if (typeof granularity !== "string" || granularity.length > 1) {
@@ -701,40 +701,40 @@ var dateTimePicker = function (element, options) {
         isInEnabledHours = function (testDate) {
             return options.enabledHours[testDate.format("H")] === true;
         },
-        isValid = function (targetMoment, granularity) {
-            if (!targetMoment.isValid()) {
+        isValid = function (targetDayJs, granularity) {
+            if (!targetDayJs.isValid()) {
                 return false;
             }
             if (
                 options.disabledDates &&
                 granularity === "d" &&
-                isInDisabledDates(targetMoment)
+                isInDisabledDates(targetDayJs)
             ) {
                 return false;
             }
             if (
                 options.enabledDates &&
                 granularity === "d" &&
-                !isInEnabledDates(targetMoment)
+                !isInEnabledDates(targetDayJs)
             ) {
                 return false;
             }
             if (
                 options.minDate &&
-                targetMoment.isBefore(options.minDate, granularity)
+                targetDayJs.isBefore(options.minDate, granularity)
             ) {
                 return false;
             }
             if (
                 options.maxDate &&
-                targetMoment.isAfter(options.maxDate, granularity)
+                targetDayJs.isAfter(options.maxDate, granularity)
             ) {
                 return false;
             }
             if (
                 options.daysOfWeekDisabled &&
                 granularity === "d" &&
-                options.daysOfWeekDisabled.indexOf(targetMoment.day()) !== -1
+                options.daysOfWeekDisabled.indexOf(targetDayJs.day()) !== -1
             ) {
                 return false;
             }
@@ -743,7 +743,7 @@ var dateTimePicker = function (element, options) {
                 (granularity === "h" ||
                     granularity === "m" ||
                     granularity === "s") &&
-                isInDisabledHours(targetMoment)
+                isInDisabledHours(targetDayJs)
             ) {
                 return false;
             }
@@ -752,7 +752,7 @@ var dateTimePicker = function (element, options) {
                 (granularity === "h" ||
                     granularity === "m" ||
                     granularity === "s") &&
-                !isInEnabledHours(targetMoment)
+                !isInEnabledHours(targetDayJs)
             ) {
                 return false;
             }
@@ -764,7 +764,7 @@ var dateTimePicker = function (element, options) {
             ) {
                 var found = false;
                 $.each(options.disabledTimeIntervals, function () {
-                    if (targetMoment.isBetween(this[0], this[1])) {
+                    if (targetDayJs.isBetween(this[0], this[1])) {
                         found = true;
                         return false;
                     }
@@ -1011,7 +1011,7 @@ var dateTimePicker = function (element, options) {
                 if (!isValid(currentDate, "d")) {
                     clsNames.push("disabled");
                 }
-                if (currentDate.isSame(getMoment(), "d")) {
+                if (currentDate.isSame(getDayJs(), "d")) {
                     clsNames.push("today");
                 }
                 if (currentDate.day() === 0 || currentDate.day() === 6) {
@@ -1158,11 +1158,11 @@ var dateTimePicker = function (element, options) {
             fillDate();
             fillTime();
         },
-        setValue = function (targetMoment) {
+        setValue = function (targetDayJs) {
             var oldDate = unset ? null : date;
 
             // case of calling setValue(null or false)
-            if (!targetMoment) {
+            if (!targetDayJs) {
                 unset = true;
                 input.val("");
                 element.data("date", "");
@@ -1175,26 +1175,26 @@ var dateTimePicker = function (element, options) {
                 return;
             }
 
-            targetMoment = targetMoment.clone();
+            targetDayJs = targetDayJs.clone();
 
             if (options.stepping !== 1) {
-                targetMoment
+                targetDayJs
                     .minute(
-                        Math.round(targetMoment.minute() / options.stepping) *
+                        Math.round(targetDayJs.minute() / options.stepping) *
                             options.stepping
                     )
                     .second(0);
 
                 while (
                     options.minDate &&
-                    targetMoment.isBefore(options.minDate)
+                    targetDayJs.isBefore(options.minDate)
                 ) {
-                    targetMoment = targetMoment.add(options.stepping, "minutes");
+                    targetDayJs = targetDayJs.add(options.stepping, "minutes");
                 }
             }
 
-            if (isValid(targetMoment)) {
-                date = targetMoment;
+            if (isValid(targetDayJs)) {
+                date = targetDayJs;
                 viewDate = date.clone();
                 input.val(date.format(actualFormat));
                 element.data("date", date.format(actualFormat));
@@ -1211,13 +1211,13 @@ var dateTimePicker = function (element, options) {
                 } else {
                     notifyEvent({
                         type: "dp.change",
-                        date: targetMoment,
+                        date: targetDayJs,
                         oldDate: oldDate,
                     });
                 }
                 notifyEvent({
                     type: "dp.error",
-                    date: targetMoment,
+                    date: targetDayJs,
                     oldDate: oldDate,
                 });
             }
@@ -1273,7 +1273,7 @@ var dateTimePicker = function (element, options) {
         parseInputDate = function (inputDate) {
             if (options.parseInputDate === undefined) {
                 if (!dayjs.isDayjs(inputDate) || inputDate instanceof Date) {
-                    inputDate = getMoment(inputDate);
+                    inputDate = getDayJs(inputDate);
                 }
             } else {
                 inputDate = options.parseInputDate(inputDate);
@@ -1516,7 +1516,7 @@ var dateTimePicker = function (element, options) {
             clear: clear,
 
             today: function () {
-                var todaysDate = getMoment();
+                var todaysDate = getDayJs();
                 if (isValid(todaysDate, "d")) {
                     setValue(todaysDate);
                 }
@@ -1537,7 +1537,7 @@ var dateTimePicker = function (element, options) {
          * @returns {object} picker
          */
         show = function () {
-            var currentMoment,
+            var currentDayJs,
                 useCurrentGranularity = {
                     year: function (m) {
                         return m
@@ -1576,14 +1576,14 @@ var dateTimePicker = function (element, options) {
                 (options.inline ||
                     (input.is("input") && input.val().trim().length === 0))
             ) {
-                currentMoment = getMoment();
+                currentDayJs = getDayJs();
                 if (typeof options.useCurrent === "string") {
-                    currentMoment =
+                    currentDayJs =
                         useCurrentGranularity[options.useCurrent](
-                            currentMoment
+                            currentDayJs
                         );
                 }
-                setValue(currentMoment);
+                setValue(currentDayJs);
             }
             widget = getTemplate();
 
@@ -1879,12 +1879,12 @@ var dateTimePicker = function (element, options) {
 
     picker.date = function (newDate) {
         ///<signature helpKeyword="$.fn.datetimepicker.date">
-        ///<summary>Returns the component's model current date, a moment object or null if not set.</summary>
-        ///<returns type="Moment">date.clone()</returns>
+        ///<summary>Returns the component's model current date, a dayjs object or null if not set.</summary>
+        ///<returns type="dayjs">date.clone()</returns>
         ///</signature>
         ///<signature>
-        ///<summary>Sets the components model current moment to it. Passing a null value unsets the components model current moment. Parsing of the newDate parameter is made using moment library with the options.format and options.useStrict components configuration.</summary>
-        ///<param name="newDate" locid="$.fn.datetimepicker.date_p:newDate">Takes string, Date, moment, null parameter.</param>
+        ///<summary>Sets the components model current dayjs to it. Passing a null value unsets the components model current dayjs. Parsing of the newDate parameter is made using dayjs library with the options.format and options.useStrict components configuration.</summary>
+        ///<param name="newDate" locid="$.fn.datetimepicker.date_p:newDate">Takes string, Date, dayjs, null parameter.</param>
         ///</signature>
         if (arguments.length === 0) {
             if (unset) {
@@ -1900,7 +1900,7 @@ var dateTimePicker = function (element, options) {
             !(newDate instanceof Date)
         ) {
             throw new TypeError(
-                "date() parameter must be one of [null, string, moment or Date]"
+                "date() parameter must be one of [null, string, dayjs or Date]"
             );
         }
 
@@ -1974,7 +1974,7 @@ var dateTimePicker = function (element, options) {
         ///<signature>
         ///<summary>Setting this takes precedence over options.minDate, options.maxDate configuration. Also calling this function removes the configuration of
         ///options.enabledDates if such exist.</summary>
-        ///<param name="dates" locid="$.fn.datetimepicker.disabledDates_p:dates">Takes an [ string or Date or moment ] of values and allows the user to select only from those days.</param>
+        ///<param name="dates" locid="$.fn.datetimepicker.disabledDates_p:dates">Takes an [ string or Date or dayjs ] of values and allows the user to select only from those days.</param>
         ///</signature>
         if (arguments.length === 0) {
             return options.disabledDates
@@ -2003,7 +2003,7 @@ var dateTimePicker = function (element, options) {
         ///</signature>
         ///<signature>
         ///<summary>Setting this takes precedence over options.minDate, options.maxDate configuration. Also calling this function removes the configuration of options.disabledDates if such exist.</summary>
-        ///<param name="dates" locid="$.fn.datetimepicker.enabledDates_p:dates">Takes an [ string or Date or moment ] of values and allows the user to select only from those days.</param>
+        ///<param name="dates" locid="$.fn.datetimepicker.enabledDates_p:dates">Takes an [ string or Date or dayjs ] of values and allows the user to select only from those days.</param>
         ///</signature>
         if (arguments.length === 0) {
             return options.enabledDates
@@ -2087,7 +2087,7 @@ var dateTimePicker = function (element, options) {
 
         if (typeof maxDate === "string") {
             if (maxDate === "now" || maxDate === "dayjs") {
-                maxDate = getMoment();
+                maxDate = getDayJs();
             }
         }
 
@@ -2131,8 +2131,8 @@ var dateTimePicker = function (element, options) {
         }
 
         if (typeof minDate === "string") {
-            if (minDate === "now" || minDate === "moment") {
-                minDate = getMoment();
+            if (minDate === "now" || minDate === "dayjs") {
+                minDate = getDayJs();
             }
         }
 
@@ -2166,12 +2166,12 @@ var dateTimePicker = function (element, options) {
 
     picker.defaultDate = function (defaultDate) {
         ///<signature helpKeyword="$.fn.datetimepicker.defaultDate">
-        ///<summary>Returns a moment with the options.defaultDate option configuration or false if not set</summary>
-        ///<returns type="Moment">date.clone()</returns>
+        ///<summary>Returns a dayjs with the options.defaultDate option configuration or false if not set</summary>
+        ///<returns type="dayjs">date.clone()</returns>
         ///</signature>
         ///<signature>
         ///<summary>Will set the picker's inital date. If a boolean:false value is passed the options.defaultDate parameter is cleared.</summary>
-        ///<param name="defaultDate" locid="$.fn.datetimepicker.defaultDate_p:defaultDate">Takes a string, Date, moment, boolean:false</param>
+        ///<param name="defaultDate" locid="$.fn.datetimepicker.defaultDate_p:defaultDate">Takes a string, Date, dayjs, boolean:false</param>
         ///</signature>
         if (arguments.length === 0) {
             return options.defaultDate
@@ -2185,9 +2185,9 @@ var dateTimePicker = function (element, options) {
 
         if (typeof defaultDate === "string") {
             if (defaultDate === "now" || defaultDate === "dayjs") {
-                defaultDate = getMoment();
+                defaultDate = getDayJs();
             } else {
-                defaultDate = getMoment(defaultDate);
+                defaultDate = getDayJs(defaultDate);
             }
         }
 
@@ -2563,8 +2563,8 @@ var dateTimePicker = function (element, options) {
         return picker;
     };
 
-    picker.getMoment = function (d) {
-        return getMoment(d);
+    picker.getDayJs = function (d) {
+        return getDayJs(d);
     };
 
     picker.debug = function (debug) {
@@ -2651,7 +2651,7 @@ var dateTimePicker = function (element, options) {
         ///<signature>
         ///<summary>Setting this takes precedence over options.minDate, options.maxDate configuration. Also calling this function removes the configuration of
         ///options.enabledDates if such exist.</summary>
-        ///<param name="dates" locid="$.fn.datetimepicker.disabledTimeIntervals_p:dates">Takes an [ string or Date or moment ] of values and allows the user to select only from those days.</param>
+        ///<param name="dates" locid="$.fn.datetimepicker.disabledTimeIntervals_p:dates">Takes an [ string or Date or dayjs ] of values and allows the user to select only from those days.</param>
         ///</signature>
         if (arguments.length === 0) {
             return options.disabledTimeIntervals
@@ -2755,12 +2755,12 @@ var dateTimePicker = function (element, options) {
         return picker;
     };
     /**
-     * Returns the component's model current viewDate, a moment object or null if not set.
-     * Passing a null value unsets the components model current moment.
-     * Parsing of the newDate parameter is made using moment library with the options.format and options.useStrict components configuration.
-     *          *
-     * @param {any} newDate Takes string, viewDate, moment, null parameter.
-     * @returns {any} The component's model current viewDate, a moment object or null if not set
+     * Returns the component's model current viewDate, a dayjs object or null if not set.
+     * Passing a null value unsets the components model current dayjs.
+     * Parsing of the newDate parameter is made using dayjs library with the options.format and options.useStrict components configuration.
+     *
+     * @param {any} newDate Takes string, viewDate, dayjs, null parameter.
+     * @returns {any} The component's model current viewDate, a dayjs object or null if not set
      */
     picker.viewDate = function (newDate) {
         if (arguments.length === 0) {
@@ -2778,7 +2778,7 @@ var dateTimePicker = function (element, options) {
             !(newDate instanceof Date)
         ) {
             throw new TypeError(
-                "viewDate() parameter must be one of [string, moment or Date]"
+                "viewDate() parameter must be one of [string, dayjs or Date]"
             );
         }
 
@@ -2819,7 +2819,7 @@ var dateTimePicker = function (element, options) {
     }
 
     // Set defaults for date here now instead of in var declaration
-    date = getMoment();
+    date = getDayJs();
     viewDate = date.clone();
 
     $.extend(true, options, dataToOptions());
@@ -2974,7 +2974,7 @@ $.fn.datetimepicker.defaults = {
             if (!widget) {
                 return;
             }
-            var d = this.date() || this.getMoment();
+            var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
                 this.date(d.subtract(7, "d"));
             } else {
@@ -2986,7 +2986,7 @@ $.fn.datetimepicker.defaults = {
                 this.show();
                 return;
             }
-            var d = this.date() || this.getMoment();
+            var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
                 this.date(d.add(7, "d"));
             } else {
@@ -2997,7 +2997,7 @@ $.fn.datetimepicker.defaults = {
             if (!widget) {
                 return;
             }
-            var d = this.date() || this.getMoment();
+            var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
                 this.date(d.subtract(1, "y"));
             } else {
@@ -3008,7 +3008,7 @@ $.fn.datetimepicker.defaults = {
             if (!widget) {
                 return;
             }
-            var d = this.date() || this.getMoment();
+            var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
                 this.date(d.add(1, "y"));
             } else {
@@ -3019,7 +3019,7 @@ $.fn.datetimepicker.defaults = {
             if (!widget) {
                 return;
             }
-            var d = this.date() || this.getMoment();
+            var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
                 this.date(d.subtract(1, "d"));
             }
@@ -3028,7 +3028,7 @@ $.fn.datetimepicker.defaults = {
             if (!widget) {
                 return;
             }
-            var d = this.date() || this.getMoment();
+            var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
                 this.date(d.add(1, "d"));
             }
@@ -3037,7 +3037,7 @@ $.fn.datetimepicker.defaults = {
             if (!widget) {
                 return;
             }
-            var d = this.date() || this.getMoment();
+            var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
                 this.date(d.subtract(1, "M"));
             }
@@ -3046,7 +3046,7 @@ $.fn.datetimepicker.defaults = {
             if (!widget) {
                 return;
             }
-            var d = this.date() || this.getMoment();
+            var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
                 this.date(d.add(1, "M"));
             }
@@ -3070,7 +3070,7 @@ $.fn.datetimepicker.defaults = {
             }
         },
         t: function () {
-            this.date(this.getMoment());
+            this.date(this.getDayJs());
         },
         delete: function () {
             this.clear();
