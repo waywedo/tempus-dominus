@@ -3,19 +3,19 @@ import $ from "jquery";
 import dayjs from "dayjs";
 import "../src/js/bootstrap-datetimepicker";
 
-describe("Plugin initialization and component basic construction", function () {
+describe("Plugin initialization and component basic construction", () => {
 
-    it("loads jquery plugin properly", function () {
+    test("loads jquery plugin properly", () => {
         expect($("<div>").datetimepicker).toBeDefined();
         expect(typeof $("<div>").datetimepicker).toEqual("function");
         expect($("<div>").datetimepicker.defaults).toBeDefined();
     });
 
-    it("creates the component with default options on an input element", function () {
-        var dtpElement = $("<input>");
+    test("creates the component with default options on an input element", () => {
+        const dtpElement = $("<input>");
         $(document).find("body").append(dtpElement);
 
-        expect(function () {
+        expect(() => {
             expect(dtpElement.datetimepicker()).toBe(dtpElement);
         }).not.toThrow();
 
@@ -24,13 +24,14 @@ describe("Plugin initialization and component basic construction", function () {
         expect(dtpElement).not.toBe(null);
     });
 
-    it("creates the component with default options merged with those provided on an input element", function () {
-        var options = { collapse : false },
-            dtpElement = $("<input>"),
-            dtp;
+    test("creates the component with default options merged with those provided on an input element", () => {
+        const options = { collapse : false };
+        const dtpElement = $("<input>");
+        let dtp;
+
         $(document).find("body").append(dtpElement);
 
-        expect(function () {
+        expect(() => {
             expect(dtpElement.datetimepicker(options)).toBe(dtpElement);
         }).not.toThrow();
 
@@ -39,18 +40,18 @@ describe("Plugin initialization and component basic construction", function () {
         expect(dtp.options()).toEqual($.extend(true, {}, dtpElement.datetimepicker.defaults, options));
     });
 
-    it("does not accept non-object or string types", function () {
-        var dtpElement = $("<input>");
+    test("does not accept non-object or string types", () => {
+        const dtpElement = $("<input>");
         $(document).find("body").append(dtpElement);
 
-        expect(function () {
+        expect(() => {
             dtpElement.datetimepicker(true);
         }).toThrow();
     });
 
-    xit("calls destroy when Element that the component is attached is removed", function () {
-        var dtpElement = $("<div>").attr("class", "row").append($("<div>").attr("class", "col-md-12").append($("<input>"))),
-            dtp;
+    xtest("calls destroy when Element that the component is attached is removed", () => {
+        const dtpElement = $("<div>").attr("class", "row").append($("<div>").attr("class", "col-md-12").append($("<input>")));
+        let dtp;
         $(document).find("body").append(dtpElement);
         dtpElement.datetimepicker();
         dtp = dtpElement.data("DateTimePicker");
@@ -60,8 +61,8 @@ describe("Plugin initialization and component basic construction", function () {
     });
 });
 
-describe("Public API method tests", function () {
-    var dtp,
+describe("Public API method tests", () => {
+    let dtp,
         dtpElement,
         dpChangeSpy,
         dpShowSpy,
@@ -69,7 +70,7 @@ describe("Public API method tests", function () {
         dpErrorSpy,
         dpClassifySpy;
 
-    beforeEach(function () {
+    beforeEach(() => {
         dpChangeSpy = jest.fn();
         dpShowSpy = jest.fn();
         dpHideSpy = jest.fn();
@@ -77,218 +78,221 @@ describe("Public API method tests", function () {
         dpClassifySpy = jest.fn();
         dtpElement = $("<input>").attr("id", "dtp");
 
-        $(document).find("body").append($("<div>").attr("class", "row").append($("<div>").attr("class", "col-md-12").append(dtpElement)));
-        $(document).find("body").on("dp.change", dpChangeSpy);
-        $(document).find("body").on("dp.show", dpShowSpy);
-        $(document).find("body").on("dp.hide", dpHideSpy);
-        $(document).find("body").on("dp.error", dpErrorSpy);
-        $(document).find("body").on("dp.classify", dpClassifySpy);
+        $(document).find("body")
+            .append($("<div>").attr("class", "row").append($("<div>").attr("class", "col-md-12").append(dtpElement)))
+            .on("dp.change", dpChangeSpy)
+            .on("dp.show", dpShowSpy)
+            .on("dp.hide", dpHideSpy)
+            .on("dp.error", dpErrorSpy)
+            .on("dp.classify", dpClassifySpy);
 
         dtpElement.datetimepicker();
         dtp = dtpElement.data("DateTimePicker");
     });
 
-    afterEach(function () {
+    afterEach(() => {
         dtp.destroy();
         dtpElement.remove();
     });
 
-    describe("configuration option name match to public api function", function () {
-        Object.getOwnPropertyNames($.fn.datetimepicker.defaults).forEach(function (key) {
-            it("has function " + key + "()", function () {
-                expect(dtp[key]).toBeDefined();
+    describe("configuration option name match to public api function", () => {
+        Object
+            .getOwnPropertyNames($.fn.datetimepicker.defaults)
+            .forEach((key) => {
+                test("has function " + key + "()", () => {
+                    expect(dtp[key]).toBeDefined();
+                });
             });
-        });
     });
 
-    describe("unknown functions", function () {
-        it("are not allowed", function () {
-            expect(function () {
+    describe("unknown functions", () => {
+        test("are not allowed", () => {
+            expect(() => {
                 dtpElement.datetimepicker("abcdef");
             }).toThrow();
         });
     });
 
-    describe("date() function", function () {
-        describe("typechecking", function () {
-            it("accepts a null", function () {
-                expect(function () {
+    describe("date() function", () => {
+        describe("typechecking", () => {
+            test("accepts a null", () => {
+                expect(() => {
                     dtp.date(null);
                 }).not.toThrow();
             });
 
-            it("accepts a string", function () {
-                expect(function () {
+            test("accepts a string", () => {
+                expect(() => {
                     dtp.date("2013/05/24");
                 }).not.toThrow();
             });
 
-            it("accepts a Date object", function () {
-                expect(function () {
+            test("accepts a Date object", () => {
+                expect(() => {
                     dtp.date(new Date());
                 }).not.toThrow();
             });
 
-            it("accepts a Moment object", function () {
-                expect(function () {
+            test("accepts a Moment object", () => {
+                expect(() => {
                     dtp.date(dayjs());
                 }).not.toThrow();
             });
 
-            it("does not accept undefined", function () {
-                expect(function () {
+            test("does not accept undefined", () => {
+                expect(() => {
                     dtp.date(undefined);
                 }).toThrow();
             });
 
-            it("does not accept a number", function () {
-                expect(function () {
+            test("does not accept a number", () => {
+                expect(() => {
                     dtp.date(0);
                 }).toThrow();
             });
 
-            it("does not accept a generic Object", function () {
-                expect(function () {
+            test("does not accept a generic Object", () => {
+                expect(() => {
                     dtp.date({});
                 }).toThrow();
             });
 
-            it("does not accept a boolean", function () {
-                expect(function () {
+            test("does not accept a boolean", () => {
+                expect(() => {
                     dtp.date(false);
                 }).toThrow();
             });
         });
 
-        describe("functionality", function () {
-            it("has no date set upon construction", function () {
+        describe("functionality", () => {
+            test("has no date set upon construction", () => {
                 expect(dtp.date()).toBe(null);
             });
 
-            it("sets the date correctly", function () {
-                var timestamp = dayjs();
+            test("sets the date correctly", () => {
+                const timestamp = dayjs();
                 dtp.date(timestamp);
                 expect(dtp.date().isSame(timestamp)).toBe(true);
             });
         });
 
-        describe("access", function () {
-            it("gets date", function () {
+        describe("access", () => {
+            test("gets date", () => {
                 expect(dtpElement.datetimepicker("date")).toBe(null);
             });
 
-            it("sets date", function () {
-                var timestamp = dayjs();
+            test("sets date", () => {
+                const timestamp = dayjs();
                 expect(dtpElement.datetimepicker("date", timestamp)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("date").isSame(timestamp)).toBe(true);
             });
         });
     });
 
-    describe("format() function", function () {
-        describe("typechecking", function () {
-            it("accepts a false value", function () {
-                expect(function () {
+    describe("format() function", () => {
+        describe("typechecking", () => {
+            test("accepts a false value", () => {
+                expect(() => {
                     dtp.format(false);
                 }).not.toThrow();
             });
 
-            it("accepts a string", function () {
-                expect(function () {
+            test("accepts a string", () => {
+                expect(() => {
                     dtp.format("YYYY-MM-DD");
                 }).not.toThrow();
             });
 
-            it("does not accept undefined", function () {
-                expect(function () {
+            test("does not accept undefined", () => {
+                expect(() => {
                     dtp.format(undefined);
                 }).toThrow();
             });
 
-            it("does not accept true", function () {
-                expect(function () {
+            test("does not accept true", () => {
+                expect(() => {
                     dtp.format(true);
                 }).toThrow();
             });
 
-            it("does not accept a generic Object", function () {
-                expect(function () {
+            test("does not accept a generic Object", () => {
+                expect(() => {
                     dtp.format({});
                 }).toThrow();
             });
         });
 
-        describe("functionality", function () {
-            it("returns no format before format is set", function () {
+        describe("functionality", () => {
+            test("returns no format before format is set", () => {
                 expect(dtp.format()).toBe(false);
             });
 
-            it("sets the format correctly", function () {
-                var format = "YYYY-MM-DD";
+            test("sets the format correctly", () => {
+                const format = "YYYY-MM-DD";
                 dtp.format(format);
                 expect(dtp.format()).toBe(format);
             });
         });
 
-        describe("access", function () {
-            it("gets format", function () {
+        describe("access", () => {
+            test("gets format", () => {
                 expect(dtpElement.datetimepicker("format")).toBe(false);
             });
 
-            it("sets format", function () {
-                var format = "YYYY-MM-DD";
+            test("sets format", () => {
+                const format = "YYYY-MM-DD";
                 expect(dtpElement.datetimepicker("format", format)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("format")).toBe(format);
             });
         });
     });
 
-    describe("destroy() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("destroy() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.destroy).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("returns jQuery object", function () {
+        describe("access", () => {
+            test("returns jQuery object", () => {
                 expect(dtpElement.datetimepicker("destroy")).toBe(dtpElement);
             });
         });
     });
 
-    describe("toggle() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("toggle() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.toggle).toBeDefined();
             });
         });
 
-        // describe('functionality', function () {
-        //     it('')
+        // describe('functionality', () => {
+        //     test('')
         // });
 
-        describe("access", function () {
-            it("returns jQuery object", function () {
+        describe("access", () => {
+            test("returns jQuery object", () => {
                 expect(dtpElement.datetimepicker("toggle")).toBe(dtpElement);
             });
         });
     });
 
-    describe("show() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("show() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.show).toBeDefined();
             });
         });
 
-        describe("functionality", function () {
-            it("emits a show event when called while widget is hidden", function () {
+        describe("functionality", () => {
+            test("emits a show event when called while widget is hidden", () => {
                 dtp.show();
                 expect(dpShowSpy).toHaveBeenCalled();
             });
 
-            it("does not emit a show event when called and widget is already showing", function () {
+            test("does not emit a show event when called and widget is already showing", () => {
                 dtp.hide();
                 dtp.show();
                 dpShowSpy.mockClear();
@@ -296,18 +300,18 @@ describe("Public API method tests", function () {
                 expect(dpShowSpy).not.toHaveBeenCalled();
             });
 
-            it("calls the classify event for each day that is shown", function () {
+            test("calls the classify event for each day that is shown", () => {
                 dtp.show();
                 expect(dpClassifySpy.mock.calls.length).toEqual(42);
             });
 
-            it("actually shows the widget", function () {
+            test("actually shows the widget", () => {
                 dtp.show();
                 expect($(document).find("body").find(".bootstrap-datetimepicker-widget").length).toEqual(1);
             });
 
-            it("applies the styles appended in the classify event handler", function () {
-                var handler = function (event) {
+            test("applies the styles appended in the classify event handler", () => {
+                const handler = function (event) {
                     if (event.date.day() === 4) {
                         event.classNames.push("humpday");
                     }
@@ -321,246 +325,246 @@ describe("Public API method tests", function () {
             });
         });
 
-        describe("access", function () {
-            it("returns jQuery object", function () {
+        describe("access", () => {
+            test("returns jQuery object", () => {
                 expect(dtpElement.datetimepicker("show")).toBe(dtpElement);
             });
         });
     });
 
-    describe("hide() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("hide() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.hide).toBeDefined();
             });
         });
 
-        describe("functionality", function () {
-            it("emits a hide event when called while widget is shown", function () {
+        describe("functionality", () => {
+            test("emits a hide event when called while widget is shown", () => {
                 dtp.show();
                 dtp.hide();
                 expect(dpHideSpy).toHaveBeenCalled();
             });
 
-            it("does not emit a hide event when called while widget is hidden", function () {
+            test("does not emit a hide event when called while widget is hidden", () => {
                 dtp.hide();
                 expect(dpHideSpy).not.toHaveBeenCalled();
             });
 
-            it("actually hides the widget", function () {
+            test("actually hides the widget", () => {
                 dtp.show();
                 dtp.hide();
                 expect($(document).find("body").find(".bootstrap-datetimepicker-widget").length).toEqual(0);
             });
         });
 
-        describe("access", function () {
-            it("returns jQuery object", function () {
+        describe("access", () => {
+            test("returns jQuery object", () => {
                 expect(dtpElement.datetimepicker("hide")).toBe(dtpElement);
             });
         });
     });
 
-    describe("disable() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("disable() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.disable).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("returns jQuery object", function () {
+        describe("access", () => {
+            test("returns jQuery object", () => {
                 expect(dtpElement.datetimepicker("disable")).toBe(dtpElement);
             });
         });
     });
 
-    describe("enable() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("enable() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.enable).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("returns jQuery object", function () {
+        describe("access", () => {
+            test("returns jQuery object", () => {
                 expect(dtpElement.datetimepicker("enable")).toBe(dtpElement);
             });
         });
     });
 
-    describe("options() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("options() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.options).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets options", function () {
+        describe("access", () => {
+            test("gets options", () => {
                 expect(dtpElement.datetimepicker("options")).toEqual(dtpElement.datetimepicker.defaults);
             });
 
-            it("sets options", function () {
-                var options = {collapse : false};
+            test("sets options", () => {
+                const options = {collapse : false};
                 expect(dtpElement.datetimepicker("options", options)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("options")).toEqual($.extend(true, {}, dtpElement.datetimepicker.defaults, options));
             });
         });
     });
 
-    describe("disabledDates() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("disabledDates() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.disabledDates).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets disabled dates", function () {
+        describe("access", () => {
+            test("gets disabled dates", () => {
                 expect(dtpElement.datetimepicker("disabledDates")).toBe(false);
             });
 
-            it("sets disabled dates", function () {
-                var timestamps = [dayjs()];
+            test("sets disabled dates", () => {
+                const timestamps = [dayjs()];
                 expect(dtpElement.datetimepicker("disabledDates", timestamps)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("disabledDates")).not.toBe(false);
             });
         });
     });
 
-    describe("enabledDates() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("enabledDates() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.enabledDates).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets enabled dates", function () {
+        describe("access", () => {
+            test("gets enabled dates", () => {
                 expect(dtpElement.datetimepicker("enabledDates")).toBe(false);
             });
 
-            it("sets enabled dates", function () {
-                var timestamps = [dayjs()];
+            test("sets enabled dates", () => {
+                const timestamps = [dayjs()];
                 expect(dtpElement.datetimepicker("enabledDates", timestamps)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("enabledDates")).not.toBe(false);
             });
         });
     });
 
-    describe("daysOfWeekDisabled() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("daysOfWeekDisabled() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.daysOfWeekDisabled).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets days of week disabled", function () {
+        describe("access", () => {
+            test("gets days of week disabled", () => {
                 expect(dtpElement.datetimepicker("daysOfWeekDisabled")).toBe(false);
             });
 
-            it("sets days of week disabled", function () {
-                var daysOfWeek = [0];
+            test("sets days of week disabled", () => {
+                const daysOfWeek = [0];
                 expect(dtpElement.datetimepicker("daysOfWeekDisabled", daysOfWeek)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("daysOfWeekDisabled")).toEqual(daysOfWeek);
             });
         });
     });
 
-    describe("maxDate() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("maxDate() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.maxDate).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets max date", function () {
+        describe("access", () => {
+            test("gets max date", () => {
                 expect(dtpElement.datetimepicker("maxDate")).toBe(false);
             });
 
-            it("sets max date", function () {
-                var timestamp = dayjs();
+            test("sets max date", () => {
+                const timestamp = dayjs();
                 expect(dtpElement.datetimepicker("maxDate", timestamp)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("maxDate").isSame(timestamp)).toBe(true);
             });
         });
     });
 
-    describe("minDate() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("minDate() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.minDate).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets min date", function () {
+        describe("access", () => {
+            test("gets min date", () => {
                 expect(dtpElement.datetimepicker("minDate")).toBe(false);
             });
 
-            it("sets min date", function () {
-                var timestamp = dayjs();
+            test("sets min date", () => {
+                const timestamp = dayjs();
                 expect(dtpElement.datetimepicker("minDate", timestamp)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("minDate").isSame(timestamp)).toBe(true);
             });
         });
     });
 
-    describe("defaultDate() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("defaultDate() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.defaultDate).toBeDefined();
             });
         });
-        describe("functionality", function () {
-            it("returns no defaultDate before defaultDate is set", function () {
+        describe("functionality", () => {
+            test("returns no defaultDate before defaultDate is set", () => {
                 expect(dtp.defaultDate()).toBe(false);
             });
 
-            it("sets the defaultDate correctly", function () {
-                var timestamp = dayjs();
+            test("sets the defaultDate correctly", () => {
+                const timestamp = dayjs();
                 dtp.defaultDate(timestamp);
                 expect(dtp.defaultDate().isSame(timestamp)).toBe(true);
                 expect(dtp.date().isSame(timestamp)).toBe(true);
             });
 
-            it("triggers a change event upon setting a default date and input field is empty", function () {
+            test("triggers a change event upon setting a default date and input field is empty", () => {
                 dtp.date(null);
                 dtp.defaultDate(dayjs());
                 expect(dpChangeSpy).toHaveBeenCalled();
             });
 
-            it("does not override input value if it already has one", function () {
-                var timestamp = dayjs();
+            test("does not override input value if it already has one", () => {
+                const timestamp = dayjs();
                 dtp.date(timestamp);
                 dtp.defaultDate(dayjs().year(2000));
                 expect(dtp.date().isSame(timestamp)).toBe(true);
             });
         });
 
-        describe("access", function () {
-            it("gets default date", function () {
+        describe("access", () => {
+            test("gets default date", () => {
                 expect(dtpElement.datetimepicker("defaultDate")).toBe(false);
             });
 
-            it("sets default date", function () {
-                var timestamp = dayjs();
+            test("sets default date", () => {
+                const timestamp = dayjs();
                 expect(dtpElement.datetimepicker("defaultDate", timestamp)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("defaultDate").isSame(timestamp)).toBe(true);
             });
         });
     });
 
-    // describe("locale() function", function () {
-    //     describe("functionality", function () {
-    //         it("it has the same locale as the global moment locale with default options", function () {
+    // describe("locale() function", () => {
+    //     describe("functionality", () => {
+    //         test("it has the same locale as the global moment locale with default options", () => {
     //             expect(dtp.locale()).toBe(moment.locale());
     //         });
 
-    //         it("it switches to a selected locale without affecting global moment locale", function () {
+    //         test("it switches to a selected locale without affecting global moment locale", () => {
     //             dtp.locale("el");
     //             dtp.date(dayjs());
     //             expect(dtp.locale()).toBe("el");
@@ -569,12 +573,12 @@ describe("Public API method tests", function () {
     //         });
     //     });
 
-    //     describe("access", function () {
-    //         it("gets locale", function () {
+    //     describe("access", () => {
+    //         test("gets locale", () => {
     //             expect(dtpElement.datetimepicker("locale")).toBe(moment.locale());
     //         });
 
-    //         it("sets locale", function () {
+    //         test("sets locale", () => {
     //             var locale = "fr";
     //             expect(dtpElement.datetimepicker("locale", locale)).toBe(dtpElement);
     //             expect(dtpElement.datetimepicker("locale")).toBe(locale);
@@ -582,594 +586,594 @@ describe("Public API method tests", function () {
     //     });
     // });
 
-    describe("useCurrent() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("useCurrent() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.useCurrent).toBeDefined();
             });
         });
-        describe("check type and parameter validity", function () {
-            it("accepts either a boolean value or string", function () {
-                var useCurrentOptions = ["year", "month", "day", "hour", "minute"];
+        describe("check type and parameter validity", () => {
+            test("accepts either a boolean value or string", () => {
+                const useCurrentOptions = ["year", "month", "day", "hour", "minute"];
 
-                expect(function () {
+                expect(() => {
                     dtp.useCurrent(false);
                 }).not.toThrow();
-                expect(function () {
+                expect(() => {
                     dtp.useCurrent(true);
                 }).not.toThrow();
 
                 useCurrentOptions.forEach(function (value) {
-                    expect(function () {
+                    expect(() => {
                         dtp.useCurrent(value);
                     }).not.toThrow();
                 });
 
-                expect(function () {
+                expect(() => {
                     dtp.useCurrent("test");
                 }).toThrow();
-                expect(function () {
+                expect(() => {
                     dtp.useCurrent({});
                 }).toThrow();
             });
         });
-        describe("functionality", function () {
-            it("triggers a change event upon show() and input field is empty", function () {
+        describe("functionality", () => {
+            test("triggers a change event upon show() and input field is empty", () => {
                 dtp.useCurrent(true);
                 dtp.show();
                 expect(dpChangeSpy).toHaveBeenCalled();
             });
         });
 
-        describe("access", function () {
-            it("gets use current", function () {
+        describe("access", () => {
+            test("gets use current", () => {
                 expect(dtpElement.datetimepicker("useCurrent")).toBe(true);
             });
 
-            it("sets use current", function () {
-                var useCurrent = false;
+            test("sets use current", () => {
+                const useCurrent = false;
                 expect(dtpElement.datetimepicker("useCurrent", useCurrent)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("useCurrent")).toBe(useCurrent);
             });
         });
     });
 
-    describe("ignoreReadonly() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("ignoreReadonly() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.ignoreReadonly).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets ignore readonly", function () {
+        describe("access", () => {
+            test("gets ignore readonly", () => {
                 expect(dtpElement.datetimepicker("ignoreReadonly")).toBe(false);
             });
 
-            it("sets ignore readonly", function () {
-                var ignoreReadonly = true;
+            test("sets ignore readonly", () => {
+                const ignoreReadonly = true;
                 expect(dtpElement.datetimepicker("ignoreReadonly", ignoreReadonly)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("ignoreReadonly")).toBe(ignoreReadonly);
             });
         });
     });
 
-    describe("stepping() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("stepping() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.stepping).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets stepping", function () {
+        describe("access", () => {
+            test("gets stepping", () => {
                 expect(dtpElement.datetimepicker("stepping")).toBe(1);
             });
 
-            it("sets stepping", function () {
-                var stepping = 2;
+            test("sets stepping", () => {
+                const stepping = 2;
                 expect(dtpElement.datetimepicker("stepping", stepping)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("stepping")).toBe(stepping);
             });
         });
     });
 
-    describe("collapse() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("collapse() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.collapse).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets collapse", function () {
+        describe("access", () => {
+            test("gets collapse", () => {
                 expect(dtpElement.datetimepicker("collapse")).toBe(true);
             });
 
-            it("sets collapse", function () {
-                var collapse = false;
+            test("sets collapse", () => {
+                const collapse = false;
                 expect(dtpElement.datetimepicker("collapse", collapse)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("collapse")).toBe(collapse);
             });
         });
     });
 
-    describe("icons() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("icons() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.icons).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets icons", function () {
+        describe("access", () => {
+            test("gets icons", () => {
                 expect(dtpElement.datetimepicker("icons")).toEqual(dtpElement.datetimepicker.defaults.icons);
             });
 
-            it("sets icons", function () {
-                var icons = {time: "fa fa-time"};
+            test("sets icons", () => {
+                const icons = {time: "fa fa-time"};
                 expect(dtpElement.datetimepicker("icons", icons)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("icons")).toEqual($.extend(true, {}, dtpElement.datetimepicker.defaults.icons, icons));
             });
         });
     });
 
-    describe("useStrict() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("useStrict() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.useStrict).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets use strict", function () {
+        describe("access", () => {
+            test("gets use strict", () => {
                 expect(dtpElement.datetimepicker("useStrict")).toBe(false);
             });
 
-            it("sets use strict", function () {
-                var useStrict = true;
+            test("sets use strict", () => {
+                const useStrict = true;
                 expect(dtpElement.datetimepicker("useStrict", useStrict)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("useStrict")).toBe(useStrict);
             });
         });
     });
 
-    describe("sideBySide() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("sideBySide() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.sideBySide).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets side-by-side", function () {
+        describe("access", () => {
+            test("gets side-by-side", () => {
                 expect(dtpElement.datetimepicker("sideBySide")).toBe(false);
             });
 
-            it("sets side-by-side", function () {
-                var sideBySide = true;
+            test("sets side-by-side", () => {
+                const sideBySide = true;
                 expect(dtpElement.datetimepicker("sideBySide", sideBySide)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("sideBySide")).toBe(sideBySide);
             });
         });
     });
 
-    describe("viewMode() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("viewMode() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.viewMode).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets view mode", function () {
+        describe("access", () => {
+            test("gets view mode", () => {
                 expect(dtpElement.datetimepicker("viewMode")).toBe("days");
             });
 
-            it("sets view mode", function () {
-                var viewMode = "years";
+            test("sets view mode", () => {
+                const viewMode = "years";
                 expect(dtpElement.datetimepicker("viewMode", viewMode)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("viewMode")).toBe(viewMode);
             });
         });
     });
 
-    describe("widgetPositioning() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("widgetPositioning() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.widgetPositioning).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets widget positioning", function () {
+        describe("access", () => {
+            test("gets widget positioning", () => {
                 expect(dtpElement.datetimepicker("widgetPositioning")).toEqual(dtpElement.datetimepicker.defaults.widgetPositioning);
             });
 
-            it("sets widget positioning", function () {
-                var widgetPositioning = {horizontal: "left"};
+            test("sets widget positioning", () => {
+                const widgetPositioning = {horizontal: "left"};
                 expect(dtpElement.datetimepicker("widgetPositioning", widgetPositioning)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("widgetPositioning")).toEqual($.extend(true, {}, dtpElement.datetimepicker.defaults.widgetPositioning, widgetPositioning));
             });
         });
     });
 
-    describe("calendarWeeks() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("calendarWeeks() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.calendarWeeks).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets calendar weeks", function () {
+        describe("access", () => {
+            test("gets calendar weeks", () => {
                 expect(dtpElement.datetimepicker("calendarWeeks")).toBe(false);
             });
 
-            it("sets calendar weeks", function () {
-                var calendarWeeks = true;
+            test("sets calendar weeks", () => {
+                const calendarWeeks = true;
                 expect(dtpElement.datetimepicker("calendarWeeks", calendarWeeks)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("calendarWeeks")).toBe(calendarWeeks);
             });
         });
     });
 
-    describe("showTodayButton() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("showTodayButton() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.showTodayButton).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets show today button", function () {
+        describe("access", () => {
+            test("gets show today button", () => {
                 expect(dtpElement.datetimepicker("showTodayButton")).toBe(false);
             });
 
-            it("sets show today button", function () {
-                var showTodayButton = true;
+            test("sets show today button", () => {
+                const showTodayButton = true;
                 expect(dtpElement.datetimepicker("showTodayButton", showTodayButton)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("showTodayButton")).toBe(showTodayButton);
             });
         });
     });
 
-    describe("showClear() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("showClear() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.showClear).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets show clear", function () {
+        describe("access", () => {
+            test("gets show clear", () => {
                 expect(dtpElement.datetimepicker("showClear")).toBe(false);
             });
 
-            it("sets show clear", function () {
-                var showClear = true;
+            test("sets show clear", () => {
+                const showClear = true;
                 expect(dtpElement.datetimepicker("showClear", showClear)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("showClear")).toBe(showClear);
             });
         });
     });
 
-    describe("dayViewHeaderFormat() function", function () {
-        describe("typechecking", function () {
-            it("does not accept a false value", function () {
-                expect(function () {
+    describe("dayViewHeaderFormat() function", () => {
+        describe("typechecking", () => {
+            test("does not accept a false value", () => {
+                expect(() => {
                     dtp.dayViewHeaderFormat(false);
                 }).toThrow();
             });
 
-            it("accepts a string", function () {
-                expect(function () {
+            test("accepts a string", () => {
+                expect(() => {
                     dtp.dayViewHeaderFormat("YYYY-MM-DD");
                 }).not.toThrow();
             });
 
-            it("does not accept undefined", function () {
-                expect(function () {
+            test("does not accept undefined", () => {
+                expect(() => {
                     dtp.dayViewHeaderFormat(undefined);
                 }).toThrow();
             });
 
-            it("does not accept true", function () {
-                expect(function () {
+            test("does not accept true", () => {
+                expect(() => {
                     dtp.dayViewHeaderFormat(true);
                 }).toThrow();
             });
 
-            it("does not accept a generic Object", function () {
-                expect(function () {
+            test("does not accept a generic Object", () => {
+                expect(() => {
                     dtp.dayViewHeaderFormat({});
                 }).toThrow();
             });
         });
 
-        describe("functionality", function () {
-            it("expects dayViewHeaderFormat to be default of MMMM YYYY", function () {
+        describe("functionality", () => {
+            test("expects dayViewHeaderFormat to be default of MMMM YYYY", () => {
                 expect(dtp.dayViewHeaderFormat()).toBe("MMMM YYYY");
             });
 
-            it("sets the dayViewHeaderFormat correctly", function () {
+            test("sets the dayViewHeaderFormat correctly", () => {
                 dtp.dayViewHeaderFormat("MM YY");
                 expect(dtp.dayViewHeaderFormat()).toBe("MM YY");
             });
         });
 
-        describe("access", function () {
-            it("gets day view header format", function () {
+        describe("access", () => {
+            test("gets day view header format", () => {
                 expect(dtpElement.datetimepicker("dayViewHeaderFormat")).toBe("MMMM YYYY");
             });
 
-            it("sets day view header format", function () {
-                var dayViewHeaderFormat = "MM YY";
+            test("sets day view header format", () => {
+                const dayViewHeaderFormat = "MM YY";
                 expect(dtpElement.datetimepicker("dayViewHeaderFormat", dayViewHeaderFormat)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("dayViewHeaderFormat")).toBe(dayViewHeaderFormat);
             });
         });
     });
 
-    describe("extraFormats() function", function () {
-        describe("typechecking", function () {
-            it("accepts a false value", function () {
-                expect(function () {
+    describe("extraFormats() function", () => {
+        describe("typechecking", () => {
+            test("accepts a false value", () => {
+                expect(() => {
                     dtp.extraFormats(false);
                 }).not.toThrow();
             });
 
-            it("does not accept a string", function () {
-                expect(function () {
+            test("does not accept a string", () => {
+                expect(() => {
                     dtp.extraFormats("YYYY-MM-DD");
                 }).toThrow();
             });
 
-            it("does not accept undefined", function () {
-                expect(function () {
+            test("does not accept undefined", () => {
+                expect(() => {
                     dtp.extraFormats(undefined);
                 }).toThrow();
             });
 
-            it("does not accept true", function () {
-                expect(function () {
+            test("does not accept true", () => {
+                expect(() => {
                     dtp.extraFormats(true);
                 }).toThrow();
             });
 
-            it("accepts an Array", function () {
-                expect(function () {
+            test("accepts an Array", () => {
+                expect(() => {
                     dtp.extraFormats(["YYYY-MM-DD"]);
                 }).not.toThrow();
             });
         });
 
-        describe("functionality", function () {
-            it("returns no extraFormats before extraFormats is set", function () {
+        describe("functionality", () => {
+            test("returns no extraFormats before extraFormats is set", () => {
                 expect(dtp.extraFormats()).toBe(false);
             });
 
-            it("sets the extraFormats correctly", function () {
+            test("sets the extraFormats correctly", () => {
                 dtp.extraFormats(["YYYY-MM-DD"]);
                 expect(dtp.extraFormats()[0]).toBe("YYYY-MM-DD");
             });
         });
 
-        describe("access", function () {
-            it("gets extra formats", function () {
+        describe("access", () => {
+            test("gets extra formats", () => {
                 expect(dtpElement.datetimepicker("extraFormats")).toBe(false);
             });
 
-            it("sets extra formats", function () {
-                var extraFormats = ["YYYY-MM-DD"];
+            test("sets extra formats", () => {
+                const extraFormats = ["YYYY-MM-DD"];
                 expect(dtpElement.datetimepicker("extraFormats", extraFormats)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("extraFormats")).toEqual(extraFormats);
             });
         });
     });
 
-    describe("toolbarPlacement() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("toolbarPlacement() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.toolbarPlacement).toBeDefined();
             });
         });
-        describe("check type and parameter validity", function () {
-            it("does not accept a false value", function () {
-                expect(function () {
+        describe("check type and parameter validity", () => {
+            test("does not accept a false value", () => {
+                expect(() => {
                     dtp.dayViewHeaderFormat(false);
                 }).toThrow();
             });
-            it("does not accept a false value", function () {
-                expect(function () {
+            test("does not accept a false value", () => {
+                expect(() => {
                     dtp.dayViewHeaderFormat(false);
                 }).toThrow();
             });
-            it("accepts a string", function () {
-                var toolbarPlacementOptions = ["default", "top", "bottom"];
+            test("accepts a string", () => {
+                const toolbarPlacementOptions = ["default", "top", "bottom"];
 
                 toolbarPlacementOptions.forEach(function (value) {
-                    expect(function () {
+                    expect(() => {
                         dtp.toolbarPlacement(value);
                     }).not.toThrow();
                 });
 
-                expect(function () {
+                expect(() => {
                     dtp.toolbarPlacement("test");
                 }).toThrow();
-                expect(function () {
+                expect(() => {
                     dtp.toolbarPlacement({});
                 }).toThrow();
             });
         });
 
-        describe("access", function () {
-            it("gets toolbar placement", function () {
+        describe("access", () => {
+            test("gets toolbar placement", () => {
                 expect(dtpElement.datetimepicker("toolbarPlacement")).toBe("default");
             });
 
-            it("sets toolbar placement", function () {
-                var toolbarPlacement = "top";
+            test("sets toolbar placement", () => {
+                const toolbarPlacement = "top";
                 expect(dtpElement.datetimepicker("toolbarPlacement", toolbarPlacement)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("toolbarPlacement")).toBe(toolbarPlacement);
             });
         });
     });
 
-    describe("widgetParent() function", function () {
-        describe("typechecking", function () {
-            it("accepts a null", function () {
-                expect(function () {
+    describe("widgetParent() function", () => {
+        describe("typechecking", () => {
+            test("accepts a null", () => {
+                expect(() => {
                     dtp.widgetParent(null);
                 }).not.toThrow();
             });
 
-            it("accepts a string", function () {
-                expect(function () {
+            test("accepts a string", () => {
+                expect(() => {
                     dtp.widgetParent("testDiv");
                 }).not.toThrow();
             });
 
-            it("accepts a jquery object", function () {
-                expect(function () {
+            test("accepts a jquery object", () => {
+                expect(() => {
                     dtp.widgetParent($("#testDiv"));
                 }).not.toThrow();
             });
 
-            it("does not accept undefined", function () {
-                expect(function () {
+            test("does not accept undefined", () => {
+                expect(() => {
                     dtp.widgetParent(undefined);
                 }).toThrow();
             });
 
-            it("does not accept a number", function () {
-                expect(function () {
+            test("does not accept a number", () => {
+                expect(() => {
                     dtp.widgetParent(0);
                 }).toThrow();
             });
 
-            it("does not accept a generic Object", function () {
-                expect(function () {
+            test("does not accept a generic Object", () => {
+                expect(() => {
                     dtp.widgetParent({});
                 }).toThrow();
             });
 
-            it("does not accept a boolean", function () {
-                expect(function () {
+            test("does not accept a boolean", () => {
+                expect(() => {
                     dtp.widgetParent(false);
                 }).toThrow();
             });
         });
 
-        describe("access", function () {
-            it("gets widget parent", function () {
+        describe("access", () => {
+            test("gets widget parent", () => {
                 expect(dtpElement.datetimepicker("widgetParent")).toBe(null);
             });
 
-            it("sets widget parent", function () {
+            test("sets widget parent", () => {
                 expect(dtpElement.datetimepicker("widgetParent", "testDiv")).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("widgetParent")).not.toBe(null);
             });
         });
     });
 
-    describe("keepOpen() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("keepOpen() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.keepOpen).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets keep open", function () {
+        describe("access", () => {
+            test("gets keep open", () => {
                 expect(dtpElement.datetimepicker("keepOpen")).toBe(false);
             });
 
-            it("sets keep open", function () {
-                var keepOpen = true;
+            test("sets keep open", () => {
+                const keepOpen = true;
                 expect(dtpElement.datetimepicker("keepOpen", keepOpen)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("keepOpen")).toBe(keepOpen);
             });
         });
     });
 
-    describe("inline() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("inline() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.inline).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets inline", function () {
+        describe("access", () => {
+            test("gets inline", () => {
                 expect(dtpElement.datetimepicker("inline")).toBe(false);
             });
 
-            it("sets inline", function () {
-                var inline = true;
+            test("sets inline", () => {
+                const inline = true;
                 expect(dtpElement.datetimepicker("inline", inline)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("inline")).toBe(inline);
             });
         });
     });
 
-    describe("clear() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("clear() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.clear).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("returns jQuery object", function () {
+        describe("access", () => {
+            test("returns jQuery object", () => {
                 expect(dtpElement.datetimepicker("clear")).toBe(dtpElement);
             });
         });
     });
 
-    describe("keyBinds() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("keyBinds() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.keyBinds).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets key binds", function () {
+        describe("access", () => {
+            test("gets key binds", () => {
                 expect(dtpElement.datetimepicker("keyBinds")).toEqual(dtpElement.datetimepicker.defaults.keyBinds);
             });
 
-            it("sets key binds", function () {
-                var keyBinds = {up: function () {}};
+            test("sets key binds", () => {
+                const keyBinds = {up: () => {}};
                 expect(dtpElement.datetimepicker("keyBinds", keyBinds)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("keyBinds")).toEqual(keyBinds);
             });
         });
     });
 
-    describe("parseInputDate() function", function () {
-        describe("existence", function () {
-            it("is defined", function () {
+    describe("parseInputDate() function", () => {
+        describe("existence", () => {
+            test("is defined", () => {
                 expect(dtp.parseInputDate).toBeDefined();
             });
         });
 
-        describe("access", function () {
-            it("gets parse input date", function () {
+        describe("access", () => {
+            test("gets parse input date", () => {
                 expect(dtpElement.datetimepicker("parseInputDate")).toBe(undefined);
             });
 
-            it("sets parse input date", function () {
-                var parseInputDate = function () {};
+            test("sets parse input date", () => {
+                const parseInputDate = () => {};
                 expect(dtpElement.datetimepicker("parseInputDate", parseInputDate)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("parseInputDate")).toBe(parseInputDate);
             });
         });
     });
 
-    // describe("Time zone tests", function () {
+    // describe("Time zone tests", () => {
     //     function makeFormatTest (format, displayTimeZone) {
-    //         it("should not change the value that was set when using format " + format, function () { // #1326
+    //         test("should not change the value that was set when using format " + format, () => { // #1326
     //             var oldFormat = dtp.format(),
     //                 oldTimeZone = dtp.timeZone(),
     //                 now = dayjs().startOf("second");
