@@ -291,7 +291,7 @@ describe("Public API method tests", function () {
             it("does not emit a show event when called and widget is already showing", function () {
                 dtp.hide();
                 dtp.show();
-                dpShowSpy.calls.reset();
+                dpShowSpy.mockClear();
                 dtp.show();
                 expect(dpShowSpy).not.toHaveBeenCalled();
             });
@@ -308,7 +308,7 @@ describe("Public API method tests", function () {
 
             it("applies the styles appended in the classify event handler", function () {
                 var handler = function (event) {
-                    if (event.date.get("weekday") === 4) {
+                    if (event.date.day() === 4) {
                         event.classNames.push("humpday");
                     }
                     event.classNames.push("injected");
@@ -402,7 +402,7 @@ describe("Public API method tests", function () {
             });
 
             it("sets options", function () {
-                var options = {locale: "fr"};
+                var options = {collapse : false};
                 expect(dtpElement.datetimepicker("options", options)).toBe(dtpElement);
                 expect(dtpElement.datetimepicker("options")).toEqual($.extend(true, {}, dtpElement.datetimepicker.defaults, options));
             });
@@ -457,8 +457,8 @@ describe("Public API method tests", function () {
         });
 
         describe("access", function () {
-            xit("gets days of week disabled", function () {
-                expect(dtpElement.datetimepicker("daysOfWeekDisabled")).toEqual([]);
+            it("gets days of week disabled", function () {
+                expect(dtpElement.datetimepicker("daysOfWeekDisabled")).toBe(false);
             });
 
             it("sets days of week disabled", function () {
@@ -1178,7 +1178,7 @@ describe("Public API method tests", function () {
     //             dtp.format(format);
 
     //             dtp.date(now);
-    //             dpChangeSpy.calls.reset();
+    //             dpChangeSpy.mockClear();
     //             dtp.show();
     //             dtp.hide();
     //             expect(dpChangeSpy).not.toHaveBeenCalled();

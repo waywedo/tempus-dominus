@@ -2027,7 +2027,9 @@ var dateTimePicker = function (element, options) {
 
     picker.daysOfWeekDisabled = function (daysOfWeekDisabled) {
         if (arguments.length === 0) {
-            return options.daysOfWeekDisabled.splice(0);
+            return options.daysOfWeekDisabled
+                ? options.daysOfWeekDisabled.splice(0)
+                : options.daysOfWeekDisabled;
         }
 
         if (typeof daysOfWeekDisabled === "boolean" && !daysOfWeekDisabled) {
