@@ -1495,20 +1495,20 @@ var dateTimePicker = function (element, options) {
                         }
                     }
                 }
-                setValue(date.clone().hours(hour));
+                setValue(date.clone().hour(hour));
                 actions.showPicker.call(picker);
             },
 
             selectMinute: function (e) {
                 setValue(
-                    date.clone().minutes(parseInt($(e.target).text(), 10))
+                    date.clone().minute(parseInt($(e.target).text(), 10))
                 );
                 actions.showPicker.call(picker);
             },
 
             selectSecond: function (e) {
                 setValue(
-                    date.clone().seconds(parseInt($(e.target).text(), 10))
+                    date.clone().second(parseInt($(e.target).text(), 10))
                 );
                 actions.showPicker.call(picker);
             },
@@ -1543,21 +1543,21 @@ var dateTimePicker = function (element, options) {
                         return m
                             .month(0)
                             .date(1)
-                            .hours(0)
-                            .seconds(0)
-                            .minutes(0);
+                            .hour(0)
+                            .second(0)
+                            .minute(0);
                     },
                     month: function (m) {
-                        return m.date(1).hours(0).seconds(0).minutes(0);
+                        return m.date(1).hour(0).second(0).minute(0);
                     },
                     day: function (m) {
-                        return m.hours(0).seconds(0).minutes(0);
+                        return m.hour(0).second(0).minute(0);
                     },
                     hour: function (m) {
-                        return m.seconds(0).minutes(0);
+                        return m.second(0).minute(0);
                     },
                     minute: function (m) {
-                        return m.seconds(0);
+                        return m.second(0);
                     },
                 };
 
@@ -2420,9 +2420,7 @@ var dateTimePicker = function (element, options) {
                 widgetPositioning.vertical.toLowerCase();
             if (verticalModes.indexOf(widgetPositioning.vertical) === -1) {
                 throw new TypeError(
-                    "widgetPositioning() expects vertical parameter to be one of (" +
-                        verticalModes.join(", ") +
-                        ")"
+                    "widgetPositioning() expects vertical parameter to be one of (" + verticalModes.join(", ") + ")"
                 );
             }
             options.widgetPositioning.vertical = widgetPositioning.vertical;
@@ -2796,9 +2794,7 @@ var dateTimePicker = function (element, options) {
             input = element.find("input");
         } else if (!input.is("input")) {
             throw new Error(
-                "CSS class \"" +
-                    options.datepickerInput +
-                    "\" cannot be applied to non input element"
+                "CSS class \"" + options.datepickerInput + "\" cannot be applied to non input element"
             );
         }
     }
