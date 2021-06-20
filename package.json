@@ -16,7 +16,7 @@
     "name": "Jonathan Peterson"
   },
   "scripts": {
-    "build": "babel src -d dist --no-comments",
+    "build": "babel src -d dist --no-comments & lessc --include-path=node_modules --clean-css src/less/bootstrap-datetimepicker-build.less dist/css/bootstrap-datetimepicker.min.css",
     "pretest": "npm run lint",
     "test": "jest",
     "test:watch": "npm test -- --watch",
@@ -56,6 +56,8 @@
     "eslint": "^7.28.0",
     "husky": "^6.0.0",
     "jest": "^27.0.4",
+    "less": "^4.1.1",
+    "less-plugin-clean-css": "^1.5.1",
     "lodash": "^4.17.21"
   }
 }

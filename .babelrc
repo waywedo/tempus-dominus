@@ -5,7 +5,10 @@
             "targets": {
                 "node": 6,
                 "browsers": [ ">0.25%", "not op_mini all" ]
-            }
+            },
+            "exclude": [
+                "@babel/plugin-transform-typeof-symbol"
+            ]
         }
     ]],
     "env": {
@@ -17,9 +20,11 @@
                     "browsers": [
                         ">0.25%", "not op_mini all"
                     ]
-                }
+                },
+                "exclude": [
+                    "@babel/plugin-transform-typeof-symbol"
+                ]
             }]]
         }
-    },
-    "plugins": ["@babel/plugin-transform-object-assign"]
+    }
 }
