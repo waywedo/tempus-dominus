@@ -49,16 +49,16 @@ describe("Plugin initialization and component basic construction", () => {
         }).toThrow();
     });
 
-    xtest("calls destroy when Element that the component is attached is removed", () => {
-        const dtpElement = $("<div>").attr("class", "row").append($("<div>").attr("class", "col-md-12").append($("<input>")));
-        let dtp;
-        $(document).find("body").append(dtpElement);
-        dtpElement.datetimepicker();
-        dtp = dtpElement.data("DateTimePicker");
-        jest.spyOn(dtp, "destroy");
-        dtpElement.remove();
-        expect(dtp.destroy).toHaveBeenCalled();
-    });
+    // xtest("calls destroy when Element that the component is attached is removed", () => {
+    //     const dtpElement = $("<div>").attr("class", "row").append($("<div>").attr("class", "col-md-12").append($("<input>")));
+    //     let dtp;
+    //     $(document).find("body").append(dtpElement);
+    //     dtpElement.datetimepicker();
+    //     dtp = dtpElement.data("DateTimePicker");
+    //     jest.spyOn(dtp, "destroy");
+    //     dtpElement.remove();
+    //     expect(dtp.destroy).toHaveBeenCalled();
+    // });
 });
 
 describe("Public API method tests", () => {
