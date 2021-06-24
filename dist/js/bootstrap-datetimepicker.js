@@ -1135,7 +1135,7 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
   }
 
   function initFormatting() {
-    actualFormat = _options2.format || "DD/MM/YYYY 'h:mm A";
+    actualFormat = _options2.format || "DD MMM YYYY h:mm A";
     parseFormats = _options2.extraFormats ? _options2.extraFormats.slice() : [];
 
     if (parseFormats.indexOf(actualFormat) < 0) {

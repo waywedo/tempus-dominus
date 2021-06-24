@@ -1568,7 +1568,7 @@ const dateTimePicker = function (element, options) {
     }
 
     function initFormatting() {
-        actualFormat = options.format || "DD/MM/YYYY 'h:mm A";
+        actualFormat = options.format || "DD MMM YYYY h:mm A";
 
         parseFormats = options.extraFormats
             ? options.extraFormats.slice()
