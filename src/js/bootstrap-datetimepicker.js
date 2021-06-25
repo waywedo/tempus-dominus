@@ -110,12 +110,12 @@ const dateTimePicker = function (element, options) {
             );
         }
         switch (granularity) {
-            case "y":
+            case "Y":
                 return actualFormat.indexOf("Y") !== -1;
             case "M":
                 return actualFormat.indexOf("M") !== -1;
-            case "d":
-                return actualFormat.toLowerCase().indexOf("d") !== -1;
+            case "D":
+                return actualFormat.indexOf("D") !== -1;
             case "h":
             case "H":
                 return actualFormat.toLowerCase().indexOf("h") !== -1;
@@ -133,7 +133,7 @@ const dateTimePicker = function (element, options) {
     }
 
     function hasDate() {
-        return isEnabled("y") || isEnabled("M") || isEnabled("d");
+        return isEnabled("Y") || isEnabled("M") || isEnabled("D");
     }
 
     function getDatePickerTemplate() {
@@ -1582,13 +1582,13 @@ const dateTimePicker = function (element, options) {
             actualFormat.toLowerCase().indexOf("a") < 1 &&
             actualFormat.replace(/\[.*?\]/g, "").indexOf("h") < 1;
 
-        if (isEnabled("y")) {
+        if (isEnabled("Y")) {
             minViewModeNumber = 2;
         }
         if (isEnabled("M")) {
             minViewModeNumber = 1;
         }
-        if (isEnabled("d")) {
+        if (isEnabled("D")) {
             minViewModeNumber = 0;
         }
 

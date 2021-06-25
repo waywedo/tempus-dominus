@@ -1,6 +1,6 @@
 {
   "name": "eonasdan-bootstrap-datetimepicker",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "A date/time picker component designed to work with Bootstrap 3 and DayJS. For usage, installation and demos see Project Site on GitHub",
   "license": "MIT",
   "main": "src/js/bootstrap-datetimepicker.js",
