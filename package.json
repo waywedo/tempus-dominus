@@ -22,7 +22,8 @@
     "test:watch": "npm test -- --watch",
     "coverage": "npm test -- --coverage",
     "lint": "eslint src/**/*.js",
-    "precommit": "npm test"
+    "precommit": "npm test",
+    "dev": "npx webpack serve"
   },
   "jest": {
     "transform": {

@@ -539,37 +539,50 @@ const dateTimePicker = function (element, options) {
     }
 
     function place() {
-        var position = (component || element).position(),
+        var parent;
+
+        if (options.inline) {
+            element.append(widget);
+            return;
+        } else {
+            parent = $(options.widgetParent).append(widget);
+        }
+
+        var calendarWidth = widget.outerWidth(),
+            calendarHeight = widget.outerHeight(),
+            visualPadding = 10,
+            position = (component || element).position(),
             offset = (component || element).offset(),
             vertical = options.widgetPositioning.vertical,
             horizontal = options.widgetPositioning.horizontal,
-            parent;
+            scrollTop = parent.is("body") ? $(document).scrollTop() : parent.scrollTop(),
+            appendOffset = parent.offset(),
+            zIndexes = [0];
 
-        if (options.widgetParent) {
-            parent = options.widgetParent.append(widget);
-        } else if (element.is("input")) {
-            parent = element.after(widget).parent();
-        } else if (options.inline) {
-            parent = element.append(widget);
-            return;
-        } else {
-            parent = element;
-            element.children().first().after(widget);
+        element.parents().each(function () {
+            const itemZIndex = $(this).css("z-index");
+            if (itemZIndex !== "auto" && Number(itemZIndex) !== 0) {
+                zIndexes.push(Number(itemZIndex));
+            }
+        });
+        const zIndex = Math.max.apply(Math, zIndexes) + 10;
+        let left = offset.left - appendOffset.left;
+        let top = offset.top - appendOffset.top;
+
+        if (!parent.is("body")) {
+            top += scrollTop;
         }
+
 
         // Top and bottom logic
         if (vertical === "auto") {
-            if (
-                offset.top + widget.height() * 1.5 >=
-                    $(window).height() + $(window).scrollTop() &&
-                widget.height() + element.outerHeight() < offset.top
-            ) {
-                vertical = "top";
-            } else {
+            if ((-scrollTop + top - calendarHeight) < 0) {
                 vertical = "bottom";
+            } else {
+                vertical = "top";
             }
         }
-
+//TODO: Continue from here.
         // Left and right logic
         if (horizontal === "auto") {
             if (
@@ -2553,10 +2566,6 @@ const dateTimePicker = function (element, options) {
                 return options.widgetParent;
             }
 
-            if (typeof widgetParent === "string") {
-                widgetParent = $(widgetParent);
-            }
-
             if (
                 widgetParent !== null &&
                 typeof widgetParent !== "string" &&
@@ -3022,7 +3031,7 @@ $.fn.datetimepicker.defaults = {
         horizontal: "auto",
         vertical: "auto",
     },
-    widgetParent: null,
+    widgetParent: "body",
     ignoreReadonly: false,
     keepOpen: false,
     focusOnShow: true,
