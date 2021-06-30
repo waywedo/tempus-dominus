@@ -234,34 +234,35 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
     var row = [];
 
     if (_options2.showTodayButton) {
-      row.push($("<td>").append($("<a>").attr({
-        "data-action": "today",
-        title: _options2.tooltips.today
-      }).append($("<span>").addClass(_options2.icons.today))));
+      pushToolbarItem(row, _options2.icons.today, _options2.tooltips.today, "today");
     }
 
     if (!_options2.sideBySide && hasDate() && hasTime()) {
-      row.push($("<td>").append($("<a>").attr({
-        "data-action": "togglePicker",
-        title: _options2.tooltips.selectTime
-      }).append($("<span>").addClass(_options2.icons.time))));
+      pushToolbarItem(row, _options2.icons.time, _options2.tooltips.selectTime, "togglePicker");
     }
 
     if (_options2.showClear) {
-      row.push($("<td>").append($("<a>").attr({
-        "data-action": "clear",
-        title: _options2.tooltips.clear
-      }).append($("<span>").addClass(_options2.icons.clear))));
+      pushToolbarItem(row, _options2.icons.clear, _options2.tooltips.clear, "clear");
     }
 
     if (_options2.showClose) {
-      row.push($("<td>").append($("<a>").attr({
-        "data-action": "close",
-        title: _options2.tooltips.close
-      }).append($("<span>").addClass(_options2.icons.close))));
+      pushToolbarItem(row, _options2.icons.close, _options2.tooltips.close, "close");
     }
 
     return $("<table>").addClass("table-condensed").append($("<tbody>").append($("<tr>").append(row)));
+  }
+
+  function pushToolbarItem(row, icon, tooltip, dataAction) {
+    if (typeof icon === "boolean" && icon === false) {
+      row.push($("<td>").append($("<a>").attr({
+        "data-action": dataAction
+      }).append($("<span>").text(tooltip))));
+    } else {
+      row.push($("<td>").append($("<a>").attr({
+        "data-action": dataAction,
+        title: tooltip
+      }).append($("<span>").addClass(icon))));
+    }
   }
 
   function getTemplate() {
@@ -1317,10 +1318,38 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
           closed.addClass("in");
         }
 
-        if ($this.is("span")) {
-          $this.toggleClass(_options2.icons.time + " " + _options2.icons.date);
+        var datePicker = closed.find(".datepicker");
+        var dateExpanded = datePicker && datePicker.length;
+        var timeAsText = typeof _options2.icons.time === "boolean" && _options2.icons.time === false;
+        var dateAsText = typeof _options2.icons.date === "boolean" && _options2.icons.date === false;
+        var $span = $this.is("span") ? $this : $this.find("span");
+
+        if (timeAsText) {
+          if (dateExpanded) {
+            $span.text(_options2.tooltips.selectTime);
+          } else if (!dateAsText) {
+            $span.empty();
+          }
         } else {
-          $this.find("span").toggleClass(_options2.icons.time + " " + _options2.icons.date);
+          $span.toggleClass(_options2.icons.time);
+
+          if (dateExpanded) {
+            $span.attr("title", _options2.tooltips.selectTime);
+          }
+        }
+
+        if (dateAsText) {
+          if (!dateExpanded) {
+            $span.text(_options2.tooltips.selectDate);
+          } else if (!timeAsText) {
+            $span.empty();
+          }
+        } else {
+          $span.toggleClass(_options2.icons.date);
+
+          if (!dateExpanded) {
+            $span.attr("title", _options2.tooltips.selectDate);
+          }
         }
       }
     },
@@ -2339,7 +2368,8 @@ $.fn.datetimepicker.defaults = {
     incrementSecond: "Increment Second",
     decrementSecond: "Decrement Second",
     togglePeriod: "Toggle Period",
-    selectTime: "Select Time"
+    selectTime: "Select Time",
+    selectDate: "Select Date"
   },
   useStrict: false,
   sideBySide: false,

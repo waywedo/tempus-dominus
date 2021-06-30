@@ -396,56 +396,45 @@ const dateTimePicker = function (element, options) {
     function getToolbar() {
         var row = [];
         if (options.showTodayButton) {
-            row.push(
-                $("<td>").append(
-                    $("<a>")
-                        .attr({
-                            "data-action": "today",
-                            title: options.tooltips.today,
-                        })
-                        .append($("<span>").addClass(options.icons.today))
-                )
-            );
+            pushToolbarItem(row, options.icons.today, options.tooltips.today, "today");
         }
         if (!options.sideBySide && hasDate() && hasTime()) {
-            row.push(
-                $("<td>").append(
-                    $("<a>")
-                        .attr({
-                            "data-action": "togglePicker",
-                            title: options.tooltips.selectTime,
-                        })
-                        .append($("<span>").addClass(options.icons.time))
-                )
-            );
+            pushToolbarItem(row, options.icons.time, options.tooltips.selectTime, "togglePicker");
         }
         if (options.showClear) {
-            row.push(
-                $("<td>").append(
-                    $("<a>")
-                        .attr({
-                            "data-action": "clear",
-                            title: options.tooltips.clear,
-                        })
-                        .append($("<span>").addClass(options.icons.clear))
-                )
-            );
+            pushToolbarItem(row, options.icons.clear, options.tooltips.clear, "clear");
         }
         if (options.showClose) {
-            row.push(
-                $("<td>").append(
-                    $("<a>")
-                        .attr({
-                            "data-action": "close",
-                            title: options.tooltips.close,
-                        })
-                        .append($("<span>").addClass(options.icons.close))
-                )
-            );
+            pushToolbarItem(row, options.icons.close, options.tooltips.close, "close");
         }
         return $("<table>")
             .addClass("table-condensed")
             .append($("<tbody>").append($("<tr>").append(row)));
+    }
+
+    function pushToolbarItem(row, icon, tooltip, dataAction) {
+        if (typeof icon === "boolean" && icon === false) {
+            row.push(
+                $("<td>").append(
+                    $("<a>")
+                        .attr({
+                            "data-action": dataAction
+                        })
+                        .append($("<span>").text(tooltip))
+                )
+            );
+        } else {
+            row.push(
+                $("<td>").append(
+                    $("<a>")
+                        .attr({
+                            "data-action": dataAction,
+                            title: tooltip
+                        })
+                        .append($("<span>").addClass(icon))
+                )
+            );
+        }
     }
 
     function getTemplate() {
@@ -1761,16 +1750,36 @@ const dateTimePicker = function (element, options) {
                     expanded.removeClass("in");
                     closed.addClass("in");
                 }
-                if ($this.is("span")) {
-                    $this.toggleClass(
-                        options.icons.time + " " + options.icons.date
-                    );
+
+                const datePicker = closed.find(".datepicker");
+                const dateExpanded = datePicker && datePicker.length;
+                const timeAsText = typeof options.icons.time === "boolean" && options.icons.time === false;
+                const dateAsText = typeof options.icons.date === "boolean" && options.icons.date === false;
+                const $span = $this.is("span") ? $this : $this.find("span");
+
+                if (timeAsText) {
+                    if (dateExpanded) {
+                        $span.text(options.tooltips.selectTime);
+                    } else if (!dateAsText) {
+                        $span.empty();
+                    }
                 } else {
-                    $this
-                        .find("span")
-                        .toggleClass(
-                            options.icons.time + " " + options.icons.date
-                        );
+                    $span.toggleClass(options.icons.time);
+                    if (dateExpanded) {
+                        $span.attr("title", options.tooltips.selectTime);
+                    }
+                }
+                if (dateAsText) {
+                    if (!dateExpanded) {
+                        $span.text(options.tooltips.selectDate);
+                    } else if (!timeAsText) {
+                        $span.empty();
+                    }
+                } else {
+                    $span.toggleClass(options.icons.date);
+                    if (!dateExpanded) {
+                        $span.attr("title", options.tooltips.selectDate);
+                    }
                 }
 
                 // NOTE: uncomment if toggled state will be restored in show()
@@ -2998,6 +3007,7 @@ $.fn.datetimepicker.defaults = {
         decrementSecond: "Decrement Second",
         togglePeriod: "Toggle Period",
         selectTime: "Select Time",
+        selectDate: "Select Date"
     },
     useStrict: false,
     sideBySide: false,
