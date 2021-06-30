@@ -551,8 +551,7 @@ const dateTimePicker = function (element, options) {
         var calendarWidth = widget.outerWidth(),
             calendarHeight = widget.outerHeight(),
             visualPadding = 10,
-            position = (component || element).position(),
-            offset = (component || element).offset(),
+            offset = component ? component.parent().offset() : element.offset(),
             vertical = options.widgetPositioning.vertical,
             horizontal = options.widgetPositioning.horizontal,
             scrollTop = parent.is("body") ? $(document).scrollTop() : parent.scrollTop(),
@@ -566,6 +565,8 @@ const dateTimePicker = function (element, options) {
             }
         });
         const zIndex = Math.max.apply(Math, zIndexes) + 10;
+        const height = component ? component.outerHeight(true) : element.outerHeight(false);
+        const width = component ? component.outerWidth(true) : element.outerWidth(false);
         let left = offset.left - appendOffset.left;
         let top = offset.top - appendOffset.top;
 
@@ -582,22 +583,29 @@ const dateTimePicker = function (element, options) {
                 vertical = "top";
             }
         }
-//TODO: Continue from here.
+
         // Left and right logic
         if (horizontal === "auto") {
-            if (
-                parent.width() < offset.left + widget.outerWidth() / 2 &&
-                offset.left + widget.outerWidth() > $(window).width()
-            ) {
+            if (offset.left < 0) {
+                horizontal = "left";
+                left -= offset.left - visualPadding;
+            } else if (left + calendarWidth > parent.width()) {
                 horizontal = "right";
+                left += width - calendarWidth;
             } else {
                 horizontal = "left";
+            }
+        } else {
+            if (horizontal === "right") {
+                left -= calendarHeight - width;
             }
         }
 
         if (vertical === "top") {
+            top -= calendarHeight + parseInt(widget.css("padding-top"));
             widget.addClass("top").removeClass("bottom");
         } else {
+            top += height;
             widget.addClass("bottom").removeClass("top");
         }
 
@@ -607,41 +615,10 @@ const dateTimePicker = function (element, options) {
             widget.removeClass("pull-right");
         }
 
-        // find the first parent element that has a non-static css positioning
-        if (parent.css("position") === "static") {
-            parent = parent
-                .parents()
-                .filter(function () {
-                    return $(this).css("position") !== "static";
-                })
-                .first();
-        }
-
-        if (parent.length === 0) {
-            throw new Error(
-                "datetimepicker component should be placed within a non-static positioned container"
-            );
-        }
-
         widget.css({
-            top:
-                vertical === "top"
-                    ? "auto"
-                    : position.top + element.outerHeight(),
-            bottom:
-                vertical === "top"
-                    ? parent.outerHeight() - (parent === element ? 0 : position.top)
-                    : "auto",
-            left:
-                horizontal === "left"
-                    ? parent === element
-                        ? 0
-                        : position.left
-                    : "auto",
-            right:
-                horizontal === "left"
-                    ? "auto"
-                    : parent.outerWidth() - element.outerWidth() - (parent === element ? 0 : position.left),
+            top: top,
+            left: left,
+            zIndex: zIndex
         });
     }
 
