@@ -1,7 +1,7 @@
 import $ from "jquery";
+import "./shim";
 import "../src/js/bootstrap-datetimepicker";
-
-window.$ = window.jQuery = $;
+import "bootstrap";
 
 $(function () {
     $("#datetimepicker1").datetimepicker();

@@ -364,6 +364,7 @@ const dateTimePicker = function (element, options) {
             .append(
                 $("<table>")
                     .addClass("table-condensed")
+                    .append("<tbody>")
                     .append([topRow, middleRow, bottomRow])
             );
     }
@@ -539,41 +540,38 @@ const dateTimePicker = function (element, options) {
     }
 
     function place() {
-        var parent;
-
         if (options.inline) {
             element.append(widget);
             return;
-        } else {
-            parent = $(options.widgetParent).append(widget);
         }
 
-        var calendarWidth = widget.outerWidth(),
-            calendarHeight = widget.outerHeight(),
-            visualPadding = 10,
-            offset = component ? component.parent().offset() : element.offset(),
-            vertical = options.widgetPositioning.vertical,
-            horizontal = options.widgetPositioning.horizontal,
-            scrollTop = parent.is("body") ? $(document).scrollTop() : parent.scrollTop(),
-            appendOffset = parent.offset(),
-            zIndexes = [0];
-
-        element.parents().each(function () {
-            const itemZIndex = $(this).css("z-index");
-            if (itemZIndex !== "auto" && Number(itemZIndex) !== 0) {
-                zIndexes.push(Number(itemZIndex));
-            }
-        });
-        const zIndex = Math.max.apply(Math, zIndexes) + 10;
+        const parent = $(options.widgetParent).append(widget);
+        const calendarWidth = widget.outerWidth();
+        const calendarHeight = widget.outerHeight();
+        const visualPadding = 10;
+        const offset = component ? component.parent().offset() : element.offset();
+        const scrollTop = parent.is("body") ? $(document).scrollTop() : parent.scrollTop();
+        const appendOffset = parent.offset();
         const height = component ? component.outerHeight(true) : element.outerHeight(false);
         const width = component ? component.outerWidth(true) : element.outerWidth(false);
+        let vertical = options.widgetPositioning.vertical;
+        let horizontal = options.widgetPositioning.horizontal;
         let left = offset.left - appendOffset.left;
         let top = offset.top - appendOffset.top;
+
+        //fetch max z-index of parents
+        const zIndexes = element.parents().map(function () {
+            if (this.style.zIndex !== "auto") {
+                return Number(this.style.zIndex);
+            }
+            return null;
+        }).get();
+
+        const zIndex = zIndexes.length ? Math.max.apply(Math, zIndexes) + 10 : 10;
 
         if (!parent.is("body")) {
             top += scrollTop;
         }
-
 
         // Top and bottom logic
         if (vertical === "auto") {
@@ -609,11 +607,7 @@ const dateTimePicker = function (element, options) {
             widget.addClass("bottom").removeClass("top");
         }
 
-        if (horizontal === "right") {
-            widget.addClass("pull-right");
-        } else {
-            widget.removeClass("pull-right");
-        }
+        widget.toggleClass("pull-right", horizontal === "right");
 
         widget.css({
             top: top,
