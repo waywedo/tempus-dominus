@@ -815,7 +815,7 @@ const dateTimePicker = function (element, options) {
         }
 
         months.each(function (index) {
-            if (!isValid(viewDate.clone().month(index), "M")) {
+            if (!isValid(viewDate.month(index), "M")) {
                 $(this).addClass("disabled");
             }
         });
@@ -1605,7 +1605,7 @@ const dateTimePicker = function (element, options) {
                 .closest("tbody")
                 .find("span")
                 .index($(e.target));
-            viewDate.month(month);
+            viewDate = viewDate.month(month);
             if (currentViewMode === minViewModeNumber) {
                 setValue(
                     date
@@ -1625,7 +1625,7 @@ const dateTimePicker = function (element, options) {
 
         selectYear(e) {
             var year = parseInt($(e.target).text(), 10) || 0;
-            viewDate.year(year);
+            viewDate = viewDate.year(year);
             if (currentViewMode === minViewModeNumber) {
                 setValue(date.clone().year(viewDate.year()));
                 if (!options.inline) {
@@ -1640,7 +1640,7 @@ const dateTimePicker = function (element, options) {
 
         selectDecade(e) {
             var year = parseInt($(e.target).data("selection"), 10) || 0;
-            viewDate.year(year);
+            viewDate = viewDate.year(year);
             if (currentViewMode === minViewModeNumber) {
                 setValue(date.clone().year(viewDate.year()));
                 if (!options.inline) {
