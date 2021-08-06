@@ -822,10 +822,9 @@ const dateTimePicker = function (element, options) {
     }
 
     function updateYears() {
-        const year = viewDate.year();
         var yearsView = widget.find(".datepicker-years"),
             yearsViewHeader = yearsView.find("th"),
-            startYearNumber = Math.floor(year / 10) * 10,
+            startYearNumber = Math.floor(viewDate.year() / 10) * 10,
             endYearNumber = startYearNumber + 1 * 9,
             startYear = viewDate.year(startYearNumber),
             endYear = viewDate.year(endYearNumber),
@@ -877,14 +876,13 @@ const dateTimePicker = function (element, options) {
     function updateDecades() {
         var decadesView = widget.find(".datepicker-decades"),
             decadesViewHeader = decadesView.find("th"),
-            startDecade = dayjs({
-                y: viewDate.year() - (viewDate.year() % 100) - 1,
-            }),
-            endDecade = startDecade.add(100, "y"),
-            startedAt = startDecade.clone(),
             minDateDecade = false,
             maxDateDecade = false,
             endDecadeYear,
+            startYearNumber = Math.floor(viewDate.year() / 100) * 100,
+            endYearNumber = startYearNumber + 10 * 9,
+            startDecade = viewDate.year(startYearNumber),
+            endDecade = viewDate.year(endYearNumber),
             html = "";
 
         decadesViewHeader
@@ -907,7 +905,7 @@ const dateTimePicker = function (element, options) {
 
         decadesViewHeader
             .eq(1)
-            .text(startDecade.year() + "-" + endDecade.year());
+            .text(startYearNumber + "-" + endYearNumber);
 
         if (
             startDecade.isSame(dayjs({ y: 2000 })) ||
@@ -916,8 +914,11 @@ const dateTimePicker = function (element, options) {
             decadesViewHeader.eq(2).addClass("disabled");
         }
 
+        startDecade = startDecade.add(-10, "y");
+        endDecade = endDecade.add(10, "y");
+
         while (!startDecade.isAfter(endDecade, "y")) {
-            endDecadeYear = startDecade.year() + 12;
+            endDecadeYear = startDecade.year() + 10;
             minDateDecade =
                 options.minDate &&
                 options.minDate.isAfter(startDecade, "y") &&
@@ -926,31 +927,23 @@ const dateTimePicker = function (element, options) {
                 options.maxDate &&
                 options.maxDate.isAfter(startDecade, "y") &&
                 options.maxDate.year() <= endDecadeYear;
+
             html +=
                 "<span data-action=\"selectDecade\" class=\"decade" +
-                (date.isAfter(startDecade) && date.year() <= endDecadeYear
-                    ? " active"
-                    : "") +
-                (!isValid(startDecade, "y") &&
-                !minDateDecade &&
-                !maxDateDecade
-                    ? " disabled"
-                    : "") +
-                "\" data-selection=\"" +
-                (startDecade.year() + 6) +
-                "\">" +
-                (startDecade.year() + 1) +
-                " - " +
-                (startDecade.year() + 12) +
+                (date.isAfter(startDecade) && date.year() <= endDecadeYear ? " active" : "") +
+                (!isValid(startDecade, "y") && !minDateDecade && !maxDateDecade ? " disabled" : "") +
+                (startDecade.year() < startYearNumber ? " old" : "") +
+                (startDecade.year() > endYearNumber ? " new" : "") +
+                "\" data-selection=\"" + startDecade.year() + "\">" +
+                startDecade.year()  +
                 "</span>";
-            startDecade = startDecade.add(12, "y");
+
+            startDecade = startDecade.add(10, "y");
         }
+
         html += "<span></span><span></span><span></span>"; //push the dangling block over, at least this way it's even
 
         decadesView.find("td").html(html);
-        decadesViewHeader
-            .eq(1)
-            .text(startedAt.year() + 1 + "-" + startDecade.year());
     }
 
     function fillDate() {
