@@ -68,6 +68,11 @@
                 bottom: -6px;
                 left: 7px;
             }
+
+            .datepicker-months,
+            .datepicker-years {
+                padding-bottom: 25px;
+            }
         }
 
         &.pull-right {
@@ -304,7 +309,8 @@
                     text-shadow: @bs-datetimepicker-text-shadow;
                 }
 
-                &.old {
+                &.old,
+                &.new {
                     color: @bs-datetimepicker-alternate-color;
                 }
 

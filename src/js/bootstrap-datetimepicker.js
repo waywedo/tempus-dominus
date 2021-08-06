@@ -822,17 +822,21 @@ const dateTimePicker = function (element, options) {
     }
 
     function updateYears() {
+        const year = viewDate.year();
         var yearsView = widget.find(".datepicker-years"),
             yearsViewHeader = yearsView.find("th"),
-            startYear = viewDate.subtract(5, "y"),
-            endYear = viewDate.add(6, "y"),
+            startYearNumber = Math.floor(year / 10) * 10,
+            endYearNumber = startYearNumber + 1 * 9,
+            startYear = viewDate.year(startYearNumber),
+            endYear = viewDate.year(endYearNumber),
             html = "";
 
         yearsViewHeader
             .eq(0)
             .find("span")
             .attr("title", options.tooltips.prevDecade);
-        yearsViewHeader.eq(1).attr("title", options.tooltips.selectDecade);
+        yearsViewHeader.eq(1)
+            .attr("title", options.tooltips.selectDecade);
         yearsViewHeader
             .eq(2)
             .find("span")
@@ -850,11 +854,17 @@ const dateTimePicker = function (element, options) {
             yearsViewHeader.eq(2).addClass("disabled");
         }
 
+
+        startYear = startYear.add(-1, "y");
+        endYear = endYear.add(1, "y");
+
         while (!startYear.isAfter(endYear, "y")) {
             html +=
                 "<span data-action=\"selectYear\" class=\"year" +
                 (startYear.isSame(date, "y") && !unset ? " active" : "") +
                 (!isValid(startYear, "y") ? " disabled" : "") +
+                (startYear.year() < startYearNumber ? " old" : "") +
+                (startYear.year() > endYearNumber ? " new" : "") +
                 "\">" +
                 startYear.year() +
                 "</span>";
