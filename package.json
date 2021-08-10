@@ -23,6 +23,7 @@
     "coverage": "npm test -- --coverage",
     "lint": "eslint src/**/*.js",
     "precommit": "npm test",
+    "less": "lessc --include-path=node_modules --clean-css src/less/bootstrap-datetimepicker-build.less dist/css/bootstrap-datetimepicker.min.css",
     "dev": "npx webpack serve"
   },
   "jest": {

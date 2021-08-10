@@ -853,7 +853,6 @@ const dateTimePicker = function (element, options) {
             yearsViewHeader.eq(2).addClass("disabled");
         }
 
-
         startYear = startYear.add(-1, "y");
         endYear = endYear.add(1, "y");
 
@@ -940,8 +939,6 @@ const dateTimePicker = function (element, options) {
 
             startDecade = startDecade.add(10, "y");
         }
-
-        html += "<span></span><span></span><span></span>"; //push the dangling block over, at least this way it's even
 
         decadesView.find("td").html(html);
     }
