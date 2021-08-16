@@ -87,11 +87,34 @@ const dateTimePicker = function (element, options) {
      *
      ********************************************************************************/
 
-    function getDayJs(d) {
+    function getDayJs(d, baseDate) {
         var returnDayJs;
 
         if (d === undefined || d === null) {
             returnDayJs = dayjs();
+        } else if (baseDate !== undefined) {
+            // If we have a baseDate, assign the value of each visible component individually
+            // in order to retain the values of the non-visible components
+            returnDayJs = baseDate;
+            const parsedDayJs = dayjs(d, parseFormats, options.useStrict);
+            if (isEnabled("Y")) {
+                returnDayJs = returnDayJs.year(parsedDayJs.year());
+            }
+            if (isEnabled("M")) {
+                returnDayJs = returnDayJs.month(parsedDayJs.month());
+            }
+            if (isEnabled("D")) {
+                returnDayJs = returnDayJs.date(parsedDayJs.date());
+            }
+            if (isEnabled("h")) {
+                returnDayJs = returnDayJs.hour(parsedDayJs.hour());
+            }
+            if (isEnabled("m")) {
+                returnDayJs = returnDayJs.minute(parsedDayJs.minute());
+            }
+            if (isEnabled("s")) {
+                returnDayJs = returnDayJs.second(parsedDayJs.second());
+            }
         } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
             // If the date that is passed in is already a Date() or dayjs() object,
             // pass it directly to dayjs.
@@ -1286,7 +1309,7 @@ const dateTimePicker = function (element, options) {
     function parseInputDate(inputDate) {
         if (options.parseInputDate === undefined) {
             if (!dayjs.isDayjs(inputDate) || inputDate instanceof Date) {
-                inputDate = getDayJs(inputDate);
+                inputDate = getDayJs(inputDate, date);
             }
         } else {
             inputDate = options.parseInputDate(inputDate);
@@ -1676,42 +1699,42 @@ const dateTimePicker = function (element, options) {
         },
 
         incrementHours() {
-            var newDate = date.add(1, "h");
+            var newDate = getDayJs(date.add(1, "h"), date);
             if (isValid(newDate, "h")) {
                 setValue(newDate);
             }
         },
 
         incrementMinutes() {
-            var newDate = date.add(options.stepping, "m");
+            var newDate = getDayJs(date.add(options.stepping, "m"), date);
             if (isValid(newDate, "m")) {
                 setValue(newDate);
             }
         },
 
         incrementSeconds() {
-            var newDate = date.add(1, "s");
+            var newDate = getDayJs(date.add(1, "s"), date);
             if (isValid(newDate, "s")) {
                 setValue(newDate);
             }
         },
 
         decrementHours() {
-            var newDate = date.subtract(1, "h");
+            var newDate = getDayJs(date.subtract(1, "h"), date);
             if (isValid(newDate, "h")) {
                 setValue(newDate);
             }
         },
 
         decrementMinutes() {
-            var newDate = date.subtract(options.stepping, "m");
+            var newDate = getDayJs(date.subtract(options.stepping, "m"), date);
             if (isValid(newDate, "m")) {
                 setValue(newDate);
             }
         },
 
         decrementSeconds() {
-            var newDate = date.subtract(1, "s");
+            var newDate = getDayJs(date.subtract(1, "s"), date);
             if (isValid(newDate, "s")) {
                 setValue(newDate);
             }
@@ -3029,9 +3052,9 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.subtract(7, "d"));
+                this.date(this.getDayJs(d.subtract(7, "d"), d));
             } else {
-                this.date(d.add(this.stepping(), "m"));
+                this.date(this.getDayJs(d.add(this.stepping(), "m"), d));
             }
         },
         down(widget) {
@@ -3041,9 +3064,9 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.add(7, "d"));
+                this.date(this.getDayJs(d.add(7, "d"), d));
             } else {
-                this.date(d.subtract(this.stepping(), "m"));
+                this.date(this.getDayJs(d.subtract(this.stepping(), "m"), d));
             }
         },
         "control up"(widget) {
@@ -3052,9 +3075,9 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.subtract(1, "y"));
+                this.date(this.getDayJs(d.subtract(1, "y"), d));
             } else {
-                this.date(d.add(1, "h"));
+                this.date(this.getDayJs(d.add(1, "h"), d));
             }
         },
         "control down"(widget) {
@@ -3063,9 +3086,9 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.add(1, "y"));
+                this.date(this.getDayJs(d.add(1, "y"), d));
             } else {
-                this.date(d.subtract(1, "h"));
+                this.date(this.getDayJs(d.subtract(1, "h"), d));
             }
         },
         left(widget) {
@@ -3074,7 +3097,7 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.subtract(1, "d"));
+                this.date(this.getDayJs(d.subtract(1, "d"), d));
             }
         },
         right(widget) {
@@ -3083,7 +3106,7 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.add(1, "d"));
+                this.date(this.getDayJs(d.add(1, "d"), d));
             }
         },
         pageUp(widget) {
@@ -3092,7 +3115,7 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.subtract(1, "M"));
+                this.date(this.getDayJs(d.subtract(1, "M"), d));
             }
         },
         pageDown(widget) {
@@ -3101,7 +3124,7 @@ $.fn.datetimepicker.defaults = {
             }
             var d = this.date() || this.getDayJs();
             if (widget.find(".datepicker").is(":visible")) {
-                this.date(d.add(1, "M"));
+                this.date(this.getDayJs(d.add(1, "M"), d));
             }
         },
         enter() {

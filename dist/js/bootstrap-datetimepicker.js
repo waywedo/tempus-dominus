@@ -70,11 +70,38 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
   },
       keyState = {};
 
-  function getDayJs(d) {
+  function getDayJs(d, baseDate) {
     var returnDayJs;
 
     if (d === undefined || d === null) {
       returnDayJs = dayjs();
+    } else if (baseDate !== undefined) {
+      returnDayJs = baseDate;
+      var parsedDayJs = dayjs(d, parseFormats, _options2.useStrict);
+
+      if (isEnabled("Y")) {
+        returnDayJs = returnDayJs.year(parsedDayJs.year());
+      }
+
+      if (isEnabled("M")) {
+        returnDayJs = returnDayJs.month(parsedDayJs.month());
+      }
+
+      if (isEnabled("D")) {
+        returnDayJs = returnDayJs.date(parsedDayJs.date());
+      }
+
+      if (isEnabled("h")) {
+        returnDayJs = returnDayJs.hour(parsedDayJs.hour());
+      }
+
+      if (isEnabled("m")) {
+        returnDayJs = returnDayJs.minute(parsedDayJs.minute());
+      }
+
+      if (isEnabled("s")) {
+        returnDayJs = returnDayJs.second(parsedDayJs.second());
+      }
     } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
       returnDayJs = dayjs(d);
     } else {
@@ -347,6 +374,12 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
     return dataOptions;
   }
 
+  function topPlace() {
+    if (widget.hasClass("top")) {
+      place();
+    }
+  }
+
   function place() {
     if (_options2.inline) {
       element.append(widget);
@@ -449,6 +482,7 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
     }
 
     widget.find(".datepicker > div").hide().filter(".datepicker-" + datePickerModes[currentViewMode].clsName).show();
+    topPlace();
   }
 
   function fillDow() {
@@ -578,11 +612,9 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
   }
 
   function updateYears() {
-    var year = _viewDate.year();
-
     var yearsView = widget.find(".datepicker-years"),
         yearsViewHeader = yearsView.find("th"),
-        startYearNumber = Math.floor(year / 10) * 10,
+        startYearNumber = Math.floor(_viewDate.year() / 10) * 10,
         endYearNumber = startYearNumber + 1 * 9,
         startYear = _viewDate.year(startYearNumber),
         endYear = _viewDate.year(endYearNumber),
@@ -617,15 +649,15 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
   function updateDecades() {
     var decadesView = widget.find(".datepicker-decades"),
         decadesViewHeader = decadesView.find("th"),
-        startDecade = dayjs({
-      y: _viewDate.year() - _viewDate.year() % 100 - 1
-    }),
-        endDecade = startDecade.add(100, "y"),
-        startedAt = startDecade.clone(),
         minDateDecade = false,
         maxDateDecade = false,
         endDecadeYear,
+        startYearNumber = Math.floor(_viewDate.year() / 100) * 100,
+        endYearNumber = startYearNumber + 10 * 9,
+        startDecade = _viewDate.year(startYearNumber),
+        endDecade = _viewDate.year(endYearNumber),
         html = "";
+
     decadesViewHeader.eq(0).find("span").attr("title", _options2.tooltips.prevCentury);
     decadesViewHeader.eq(2).find("span").attr("title", _options2.tooltips.nextCentury);
     decadesView.find(".disabled").removeClass("disabled");
@@ -636,7 +668,7 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
       decadesViewHeader.eq(0).addClass("disabled");
     }
 
-    decadesViewHeader.eq(1).text(startDecade.year() + "-" + endDecade.year());
+    decadesViewHeader.eq(1).text(startYearNumber + "-" + endYearNumber);
 
     if (startDecade.isSame(dayjs({
       y: 2000
@@ -644,17 +676,18 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
       decadesViewHeader.eq(2).addClass("disabled");
     }
 
+    startDecade = startDecade.add(-10, "y");
+    endDecade = endDecade.add(10, "y");
+
     while (!startDecade.isAfter(endDecade, "y")) {
-      endDecadeYear = startDecade.year() + 12;
+      endDecadeYear = startDecade.year() + 10;
       minDateDecade = _options2.minDate && _options2.minDate.isAfter(startDecade, "y") && _options2.minDate.year() <= endDecadeYear;
       maxDateDecade = _options2.maxDate && _options2.maxDate.isAfter(startDecade, "y") && _options2.maxDate.year() <= endDecadeYear;
-      html += "<span data-action=\"selectDecade\" class=\"decade" + (_date.isAfter(startDecade) && _date.year() <= endDecadeYear ? " active" : "") + (!isValid(startDecade, "y") && !minDateDecade && !maxDateDecade ? " disabled" : "") + "\" data-selection=\"" + (startDecade.year() + 6) + "\">" + (startDecade.year() + 1) + " - " + (startDecade.year() + 12) + "</span>";
-      startDecade = startDecade.add(12, "y");
+      html += "<span data-action=\"selectDecade\" class=\"decade" + (_date.isAfter(startDecade) && _date.year() <= endDecadeYear ? " active" : "") + (!isValid(startDecade, "y") && !minDateDecade && !maxDateDecade ? " disabled" : "") + (startDecade.year() < startYearNumber ? " old" : "") + (startDecade.year() > endYearNumber ? " new" : "") + "\" data-selection=\"" + startDecade.year() + "\">" + startDecade.year() + "</span>";
+      startDecade = startDecade.add(10, "y");
     }
 
-    html += "<span></span><span></span><span></span>";
     decadesView.find("td").html(html);
-    decadesViewHeader.eq(1).text(startedAt.year() + 1 + "-" + startDecade.year());
   }
 
   function fillDate() {
@@ -745,7 +778,7 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
         row = $("<tr>");
 
     if (_viewDate.hour() > 11 && !use24Hours) {
-      currentHour.hour(12);
+      currentHour = currentHour.hour(12);
     }
 
     while (currentHour.isSame(_viewDate, "d") && (use24Hours || _viewDate.hour() < 12 && currentHour.hour() < 12 || _viewDate.hour() > 11)) {
@@ -939,7 +972,7 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
   function parseInputDate(inputDate) {
     if (_options2.parseInputDate === undefined) {
       if (!dayjs.isDayjs(inputDate) || inputDate instanceof Date) {
-        inputDate = getDayJs(inputDate);
+        inputDate = getDayJs(inputDate, _date);
       }
     } else {
       inputDate = _options2.parseInputDate(inputDate);
@@ -1263,42 +1296,42 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
       }
     },
     incrementHours: function incrementHours() {
-      var newDate = _date.add(1, "h");
+      var newDate = getDayJs(_date.add(1, "h"), _date);
 
       if (isValid(newDate, "h")) {
         setValue(newDate);
       }
     },
     incrementMinutes: function incrementMinutes() {
-      var newDate = _date.add(_options2.stepping, "m");
+      var newDate = getDayJs(_date.add(_options2.stepping, "m"), _date);
 
       if (isValid(newDate, "m")) {
         setValue(newDate);
       }
     },
     incrementSeconds: function incrementSeconds() {
-      var newDate = _date.add(1, "s");
+      var newDate = getDayJs(_date.add(1, "s"), _date);
 
       if (isValid(newDate, "s")) {
         setValue(newDate);
       }
     },
     decrementHours: function decrementHours() {
-      var newDate = _date.subtract(1, "h");
+      var newDate = getDayJs(_date.subtract(1, "h"), _date);
 
       if (isValid(newDate, "h")) {
         setValue(newDate);
       }
     },
     decrementMinutes: function decrementMinutes() {
-      var newDate = _date.subtract(_options2.stepping, "m");
+      var newDate = getDayJs(_date.subtract(_options2.stepping, "m"), _date);
 
       if (isValid(newDate, "m")) {
         setValue(newDate);
       }
     },
     decrementSeconds: function decrementSeconds() {
-      var newDate = _date.subtract(1, "s");
+      var newDate = getDayJs(_date.subtract(1, "s"), _date);
 
       if (isValid(newDate, "s")) {
         setValue(newDate);
@@ -1362,23 +1395,29 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
             $span.attr("title", _options2.tooltips.selectDate);
           }
         }
+
+        topPlace();
       }
     },
     showPicker: function showPicker() {
       widget.find(".timepicker > div:not(.timepicker-picker)").hide();
       widget.find(".timepicker .timepicker-picker").show();
+      topPlace();
     },
     showHours: function showHours() {
       widget.find(".timepicker .timepicker-picker").hide();
       widget.find(".timepicker .timepicker-hours").show();
+      topPlace();
     },
     showMinutes: function showMinutes() {
       widget.find(".timepicker .timepicker-picker").hide();
       widget.find(".timepicker .timepicker-minutes").show();
+      topPlace();
     },
     showSeconds: function showSeconds() {
       widget.find(".timepicker .timepicker-picker").hide();
       widget.find(".timepicker .timepicker-seconds").show();
+      topPlace();
     },
     selectHour: function selectHour(e) {
       var hour = parseInt($(e.target).text(), 10);
@@ -2407,9 +2446,9 @@ $.fn.datetimepicker.defaults = {
       var d = this.date() || this.getDayJs();
 
       if (widget.find(".datepicker").is(":visible")) {
-        this.date(d.subtract(7, "d"));
+        this.date(this.getDayJs(d.subtract(7, "d"), d));
       } else {
-        this.date(d.add(this.stepping(), "m"));
+        this.date(this.getDayJs(d.add(this.stepping(), "m"), d));
       }
     },
     down: function down(widget) {
@@ -2421,9 +2460,9 @@ $.fn.datetimepicker.defaults = {
       var d = this.date() || this.getDayJs();
 
       if (widget.find(".datepicker").is(":visible")) {
-        this.date(d.add(7, "d"));
+        this.date(this.getDayJs(d.add(7, "d"), d));
       } else {
-        this.date(d.subtract(this.stepping(), "m"));
+        this.date(this.getDayJs(d.subtract(this.stepping(), "m"), d));
       }
     },
     "control up": function controlUp(widget) {
@@ -2434,9 +2473,9 @@ $.fn.datetimepicker.defaults = {
       var d = this.date() || this.getDayJs();
 
       if (widget.find(".datepicker").is(":visible")) {
-        this.date(d.subtract(1, "y"));
+        this.date(this.getDayJs(d.subtract(1, "y"), d));
       } else {
-        this.date(d.add(1, "h"));
+        this.date(this.getDayJs(d.add(1, "h"), d));
       }
     },
     "control down": function controlDown(widget) {
@@ -2447,9 +2486,9 @@ $.fn.datetimepicker.defaults = {
       var d = this.date() || this.getDayJs();
 
       if (widget.find(".datepicker").is(":visible")) {
-        this.date(d.add(1, "y"));
+        this.date(this.getDayJs(d.add(1, "y"), d));
       } else {
-        this.date(d.subtract(1, "h"));
+        this.date(this.getDayJs(d.subtract(1, "h"), d));
       }
     },
     left: function left(widget) {
@@ -2460,7 +2499,7 @@ $.fn.datetimepicker.defaults = {
       var d = this.date() || this.getDayJs();
 
       if (widget.find(".datepicker").is(":visible")) {
-        this.date(d.subtract(1, "d"));
+        this.date(this.getDayJs(d.subtract(1, "d"), d));
       }
     },
     right: function right(widget) {
@@ -2471,7 +2510,7 @@ $.fn.datetimepicker.defaults = {
       var d = this.date() || this.getDayJs();
 
       if (widget.find(".datepicker").is(":visible")) {
-        this.date(d.add(1, "d"));
+        this.date(this.getDayJs(d.add(1, "d"), d));
       }
     },
     pageUp: function pageUp(widget) {
@@ -2482,7 +2521,7 @@ $.fn.datetimepicker.defaults = {
       var d = this.date() || this.getDayJs();
 
       if (widget.find(".datepicker").is(":visible")) {
-        this.date(d.subtract(1, "M"));
+        this.date(this.getDayJs(d.subtract(1, "M"), d));
       }
     },
     pageDown: function pageDown(widget) {
@@ -2493,7 +2532,7 @@ $.fn.datetimepicker.defaults = {
       var d = this.date() || this.getDayJs();
 
       if (widget.find(".datepicker").is(":visible")) {
-        this.date(d.add(1, "M"));
+        this.date(this.getDayJs(d.add(1, "M"), d));
       }
     },
     enter: function enter() {
