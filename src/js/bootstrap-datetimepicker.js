@@ -539,6 +539,12 @@ const dateTimePicker = function (element, options) {
         return dataOptions;
     }
 
+    function topPlace() {
+        if (widget.hasClass("top")) {
+            place();
+        }
+    }
+
     function place() {
         if (options.inline) {
             element.append(widget);
@@ -655,6 +661,8 @@ const dateTimePicker = function (element, options) {
                 ".datepicker-" + datePickerModes[currentViewMode].clsName
             )
             .show();
+
+        topPlace();
     }
 
     function fillDow() {
@@ -1046,7 +1054,7 @@ const dateTimePicker = function (element, options) {
             row = $("<tr>");
 
         if (viewDate.hour() > 11 && !use24Hours) {
-            currentHour.hour(12);
+            currentHour = currentHour.hour(12);
         }
         while (
             currentHour.isSame(viewDate, "d") &&
@@ -1766,6 +1774,7 @@ const dateTimePicker = function (element, options) {
                     }
                 }
 
+                topPlace();
                 // NOTE: uncomment if toggled state will be restored in show()
                 //if (component) {
                 //    component.find('span').toggleClass(options.icons.time + ' ' + options.icons.date);
@@ -1776,21 +1785,25 @@ const dateTimePicker = function (element, options) {
         showPicker() {
             widget.find(".timepicker > div:not(.timepicker-picker)").hide();
             widget.find(".timepicker .timepicker-picker").show();
+            topPlace();
         },
 
         showHours() {
             widget.find(".timepicker .timepicker-picker").hide();
             widget.find(".timepicker .timepicker-hours").show();
+            topPlace();
         },
 
         showMinutes() {
             widget.find(".timepicker .timepicker-picker").hide();
             widget.find(".timepicker .timepicker-minutes").show();
+            topPlace();
         },
 
         showSeconds() {
             widget.find(".timepicker .timepicker-picker").hide();
             widget.find(".timepicker .timepicker-seconds").show();
+            topPlace();
         },
 
         selectHour(e) {
