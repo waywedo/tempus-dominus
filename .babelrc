@@ -1,0 +1,30 @@
+{
+    "presets": [["@babel/preset-env",
+        {
+            "modules": false,
+            "targets": {
+                "node": 6,
+                "browsers": [ ">0.25%", "not op_mini all" ]
+            },
+            "exclude": [
+                "@babel/plugin-transform-typeof-symbol"
+            ]
+        }
+    ]],
+    "env": {
+        "test": {
+            "presets": [["@babel/preset-env",
+            {
+                "targets":
+                {
+                    "browsers": [
+                        ">0.25%", "not op_mini all"
+                    ]
+                },
+                "exclude": [
+                    "@babel/plugin-transform-typeof-symbol"
+                ]
+            }]]
+        }
+    }
+}
