@@ -994,19 +994,19 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
     var currentDayJs,
         useCurrentGranularity = {
       year: function year(m) {
-        return m.month(0).date(1).hour(0).second(0).minute(0);
+        return m.month(0).date(1).hour(0).minute(0).second(0).millisecond(0);
       },
       month: function month(m) {
-        return m.date(1).hour(0).second(0).minute(0);
+        return m.date(1).hour(0).minute(0).second(0).millisecond(0);
       },
       day: function day(m) {
-        return m.hour(0).second(0).minute(0);
+        return m.hour(0).minute(0).second(0).millisecond(0);
       },
       hour: function hour(m) {
-        return m.second(0).minute(0);
+        return m.minute(0).second(0).millisecond(0);
       },
       minute: function minute(m) {
-        return m.second(0);
+        return m.second(0).millisecond(0);
       }
     };
 

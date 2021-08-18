@@ -1344,20 +1344,21 @@ const dateTimePicker = function (element, options) {
                         .month(0)
                         .date(1)
                         .hour(0)
+                        .minute(0)
                         .second(0)
-                        .minute(0);
+                        .millisecond(0);
                 },
                 month(m) {
-                    return m.date(1).hour(0).second(0).minute(0);
+                    return m.date(1).hour(0).minute(0).second(0).millisecond(0);
                 },
                 day(m) {
-                    return m.hour(0).second(0).minute(0);
+                    return m.hour(0).minute(0).second(0).millisecond(0);
                 },
                 hour(m) {
-                    return m.second(0).minute(0);
+                    return m.minute(0).second(0).millisecond(0);
                 },
                 minute(m) {
-                    return m.second(0);
+                    return m.second(0).millisecond(0);
                 },
             };
 
