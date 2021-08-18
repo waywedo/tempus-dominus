@@ -92,15 +92,22 @@ const dateTimePicker = function (element, options) {
 
         if (d === undefined || d === null) {
             returnDayJs = dayjs();
-        } else if (baseDate !== undefined && actualFormat) {
-            // If we have a baseDate, the value of each visible component will be assigned individually
-            // in order to retain the previous values for the non-visible components
-            returnDayJs = baseDate;
-
+        } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
+            // If the date that is passed in is already a Date() or dayjs() object,
+            // pass it directly to dayjs.
+            returnDayJs = dayjs(d);
+        } else {
             // FIXME: This parse may not work correctly in some situations because the components excluded
             // from the format will be defaulted to today
             // This may make e.g. a parsed day of month invalid for the current month and the parsed value will be altered
-            const parsedDayJs = dayjs(d, parseFormats, options.useStrict);
+            returnDayJs = dayjs(d, parseFormats, options.useStrict);
+        }
+
+        if (baseDate !== undefined && actualFormat) {
+            // If we have a baseDate, the value of each visible component will be assigned individually
+            // in order to retain the previous values for the non-visible components
+            const parsedDayJs = returnDayJs;
+            returnDayJs = baseDate;
 
             if (isEnabled("Y")) {
                 returnDayJs = returnDayJs.year(parsedDayJs.year());
@@ -120,12 +127,6 @@ const dateTimePicker = function (element, options) {
             if (isEnabled("s")) {
                 returnDayJs = returnDayJs.second(parsedDayJs.second());
             }
-        } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
-            // If the date that is passed in is already a Date() or dayjs() object,
-            // pass it directly to dayjs.
-            returnDayJs = dayjs(d);
-        } else {
-            returnDayJs = dayjs(d, parseFormats, options.useStrict);
         }
 
         return returnDayJs;

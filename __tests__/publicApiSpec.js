@@ -133,7 +133,7 @@ describe("Public API method tests", () => {
                 }).not.toThrow();
             });
 
-            test("accepts a Moment object", () => {
+            test("accepts a dayjs object", () => {
                 expect(() => {
                     dtp.date(dayjs());
                 }).not.toThrow();

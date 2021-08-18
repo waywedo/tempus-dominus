@@ -75,9 +75,15 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
 
     if (d === undefined || d === null) {
       returnDayJs = dayjs();
-    } else if (baseDate !== undefined && actualFormat) {
+    } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
+      returnDayJs = dayjs(d);
+    } else {
+      returnDayJs = dayjs(d, parseFormats, _options2.useStrict);
+    }
+
+    if (baseDate !== undefined && actualFormat) {
+      var parsedDayJs = returnDayJs;
       returnDayJs = baseDate;
-      var parsedDayJs = dayjs(d, parseFormats, _options2.useStrict);
 
       if (isEnabled("Y")) {
         returnDayJs = returnDayJs.year(parsedDayJs.year());
@@ -102,10 +108,6 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
       if (isEnabled("s")) {
         returnDayJs = returnDayJs.second(parsedDayJs.second());
       }
-    } else if (dayjs(d).isValid() || dayjs.isDayjs(d)) {
-      returnDayJs = dayjs(d);
-    } else {
-      returnDayJs = dayjs(d, parseFormats, _options2.useStrict);
     }
 
     return returnDayJs;
