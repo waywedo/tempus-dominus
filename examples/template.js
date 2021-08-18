@@ -42,4 +42,14 @@ $(function () {
         format: "DD",
         date: dayjs("1901-08-31T12:00"),
     });
+
+    // Inline Date Only
+    showOutput("#datetimepicker6");
+    $("#datetimepicker6").datetimepicker({
+        inline: true,
+        useCurrent: false,
+        showClear: true,
+        date: "1901-08-31T12:00Z",
+        format: "DD MMM YYYY",
+    });
 });

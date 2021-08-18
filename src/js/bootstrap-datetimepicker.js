@@ -92,7 +92,7 @@ const dateTimePicker = function (element, options) {
 
         if (d === undefined || d === null) {
             returnDayJs = dayjs();
-        } else if (baseDate !== undefined) {
+        } else if (baseDate !== undefined && actualFormat) {
             // If we have a baseDate, the value of each visible component will be assigned individually
             // in order to retain the previous values for the non-visible components
             returnDayJs = baseDate;

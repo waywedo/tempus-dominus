@@ -75,7 +75,7 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
 
     if (d === undefined || d === null) {
       returnDayJs = dayjs();
-    } else if (baseDate !== undefined) {
+    } else if (baseDate !== undefined && actualFormat) {
       returnDayJs = baseDate;
       var parsedDayJs = dayjs(d, parseFormats, _options2.useStrict);
 
