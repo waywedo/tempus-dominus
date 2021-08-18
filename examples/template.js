@@ -5,21 +5,41 @@ import "bootstrap";
 import dayjs from "dayjs";
 
 $(function () {
+    const showOutput = function (el) {
+        $(el).on("dp.change", function (e) {
+            $(el + "-output").text(e.date.format("DD MMM YYYY HH:mm:ss.sss Z"));
+        });
+    };
+
+    // Default Options
+    showOutput("#datetimepicker1");
     $("#datetimepicker1").datetimepicker();
 
-    $("#datetimepicker2").on("dp.change", function (e) {
-        $("#datetimepicker2-output").text(e.date.format("DD MMM YYYY HH:mm"));
-    });
+    // Time Only
+    showOutput("#datetimepicker2");
     $("#datetimepicker2").datetimepicker({
         format: "HH:mm",
         date: dayjs("1901-01-01T22:22"),
     });
 
-    $("#datetimepicker3").on("dp.change", function (e) {
-        $("#datetimepicker3-output").text(e.date.format("DD MMM YYYY HH:mm"));
-    });
+    // Date Only
+    showOutput("#datetimepicker3");
     $("#datetimepicker3").datetimepicker({
+        format: "DD MMM YYYY",
+        useCurrent: "day"
+    });
+
+    // Date Only (with initial time)
+    showOutput("#datetimepicker4");
+    $("#datetimepicker4").datetimepicker({
+        format: "DD MMM YYYY",
+        date: dayjs("2000-05-20T12:34:56.789"),
+    });
+
+    // Day Only
+    showOutput("#datetimepicker5");
+    $("#datetimepicker5").datetimepicker({
         format: "DD",
-        date: dayjs("1901-08-20T12:00"),
+        date: dayjs("1901-08-31T12:00"),
     });
 });
