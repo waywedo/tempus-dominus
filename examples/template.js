@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 $(function () {
     const showOutput = function (el) {
         $(el).on("dp.change", function (e) {
-            $(el + "-output").text(e.date.format("DD MMM YYYY HH:mm:ss.sss Z"));
+            $(el + "-output").text(e.date.format("DD MMM YYYY HH:mm:ss.SSS Z"));
         });
     };
 
