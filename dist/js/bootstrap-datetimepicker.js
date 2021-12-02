@@ -1398,7 +1398,11 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
           }
         }
 
-        topPlace();
+        if (dateExpanded) {
+          actions.showPicker.call(picker);
+        } else {
+          topPlace();
+        }
       }
     },
     showPicker: function showPicker() {

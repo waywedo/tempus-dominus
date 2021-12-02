@@ -1803,8 +1803,12 @@ const dateTimePicker = function (element, options) {
                         $span.attr("title", options.tooltips.selectDate);
                     }
                 }
-
-                topPlace();
+                if (dateExpanded) {
+                    //reset timepicker so it is not left stuck in minutes view
+                    actions.showPicker.call(picker);
+                } else {
+                    topPlace();
+                }
                 // NOTE: uncomment if toggled state will be restored in show()
                 //if (component) {
                 //    component.find('span').toggleClass(options.icons.time + ' ' + options.icons.date);
