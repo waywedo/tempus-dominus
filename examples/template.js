@@ -3,8 +3,14 @@ import "./shim";
 import "../src/js/bootstrap-datetimepicker";
 import "bootstrap";
 import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import weekOfYear from "dayjs/plugin/weekOfYear";
 
 $(function () {
+    // Register dayjs plugins
+    dayjs.extend(advancedFormat);
+    dayjs.extend(weekOfYear);
+
     const showOutput = function (el) {
         $(el).on("dp.change", function (e) {
             $(el + "-output").text(e.date.format("DD MMM YYYY HH:mm:ss.SSS Z"));
@@ -26,7 +32,7 @@ $(function () {
     showOutput("#datetimepicker3");
     $("#datetimepicker3").datetimepicker({
         format: "DD MMM YYYY",
-        useCurrent: "day"
+        useCurrent: "day",
     });
 
     // Date Only (with initial time)
@@ -43,9 +49,33 @@ $(function () {
         date: dayjs("1901-08-31T12:00"),
     });
 
-    // Inline Date Only
+    // Year Only
     showOutput("#datetimepicker6");
     $("#datetimepicker6").datetimepicker({
+        format: "YYYY",
+    });
+
+    // Month And Year
+    showOutput("#datetimepicker7");
+    $("#datetimepicker7").datetimepicker({
+        format: "MMM YYYY",
+    });
+
+    // Week And Year
+    showOutput("#datetimepicker8");
+    $("#datetimepicker8").datetimepicker({
+        format: "[W]w YYYY",
+    });
+
+    // Quarter And Year
+    showOutput("#datetimepicker9");
+    $("#datetimepicker9").datetimepicker({
+        format: "[Q]Q YYYY",
+    });
+
+    // Inline Date Only
+    showOutput("#datetimepicker10");
+    $("#datetimepicker10").datetimepicker({
         inline: true,
         useCurrent: false,
         showClear: true,
