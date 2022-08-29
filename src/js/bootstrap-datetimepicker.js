@@ -596,11 +596,13 @@ const dateTimePicker = function (element, options) {
 
         //fetch max z-index of parents
         const zIndexes = element.parents().map(function () {
-            if (this.style.zIndex !== "auto") {
-                return Number(this.style.zIndex);
+            const elStyle = window.getComputedStyle(this).getPropertyValue("z-index");
+            if (elStyle !== "auto") {
+                return Number(elStyle);
             }
             return null;
         }).get();
+
 
         const zIndex = zIndexes.length ? Math.max.apply(Math, zIndexes) + 10 : 10;
 

@@ -1,6 +1,6 @@
 {
   "name": "tempus-dominus",
-  "version": "4.2.8",
+  "version": "4.2.9",
   "description": "A date/time picker component designed to work with Bootstrap 3 and DayJS. Forked from http://eonasdan.github.io/bootstrap-datetimepicker/",
   "license": "MIT",
   "main": "dist/js/bootstrap-datetimepicker.js",

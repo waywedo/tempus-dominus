@@ -402,8 +402,10 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
     var left = offset.left - appendOffset.left;
     var top = offset.top - appendOffset.top;
     var zIndexes = element.parents().map(function () {
-      if (this.style.zIndex !== "auto") {
-        return Number(this.style.zIndex);
+      var elStyle = window.getComputedStyle(this).getPropertyValue("z-index");
+
+      if (elStyle !== "auto") {
+        return Number(elStyle);
       }
 
       return null;

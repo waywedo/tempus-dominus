@@ -49,6 +49,26 @@ describe("Plugin initialization and component basic construction", () => {
         }).toThrow();
     });
 
+    test("sets zindex higher than parents", () => {
+        const dtpElement = $("<input>");
+        let dtp;
+        const style = document.createElement("style");
+
+        style.appendChild(document.createTextNode(""));
+        document.head.appendChild(style);
+
+        style.sheet.insertRule("#container { z-index: 1000; }");
+
+        $(document).find("body").append($("<div id=\"container\"></div>").append(dtpElement));
+
+        dtpElement.datetimepicker();
+        dtp = dtpElement.data("DateTimePicker");
+
+        dtp.show();
+
+        expect($(document).find("body").find(".bootstrap-datetimepicker-widget").css("z-index")).toEqual("1010");
+    });
+
     // xtest("calls destroy when Element that the component is attached is removed", () => {
     //     const dtpElement = $("<div>").attr("class", "row").append($("<div>").attr("class", "col-md-12").append($("<input>")));
     //     let dtp;
