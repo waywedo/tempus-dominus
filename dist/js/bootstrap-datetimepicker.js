@@ -1474,21 +1474,33 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
     show: show,
     hide: hide,
     disable: function disable() {
-      hide();
+      if (_options2.inline) {
+        if (widget) {
+          widget.find("[data-action]").addClass("disabled");
+        }
+      } else {
+        hide();
 
-      if (component && component.hasClass("btn")) {
-        component.addClass("disabled");
+        if (component && component.hasClass("btn")) {
+          component.addClass("disabled");
+        }
+
+        input.prop("disabled", true);
       }
 
-      input.prop("disabled", true);
       return picker;
     },
     enable: function enable() {
-      if (component && component.hasClass("btn")) {
-        component.removeClass("disabled");
+      if (_options2.inline) {
+        update();
+      } else {
+        if (component && component.hasClass("btn")) {
+          component.removeClass("disabled");
+        }
+
+        input.prop("disabled", false);
       }
 
-      input.prop("disabled", false);
       return picker;
     },
     ignoreReadonly: function ignoreReadonly(_ignoreReadonly) {
@@ -2329,6 +2341,10 @@ var dateTimePicker = function dateTimePicker(element, _options2) {
 
   if (_options2.inline) {
     show();
+
+    if (_options2.disable) {
+      picker.disable();
+    }
   }
 
   return picker;

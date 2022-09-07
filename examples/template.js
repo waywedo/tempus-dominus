@@ -82,4 +82,15 @@ $(function () {
         date: "1901-08-31T12:00Z",
         format: "DD MMM YYYY",
     });
+
+    // Disabled Inline Date
+    showOutput("#datetimepicker11");
+    $("#datetimepicker11").datetimepicker({
+        inline: true,
+        useCurrent: false,
+        showClear: true,
+        date: "1901-08-31T12:00Z",
+        format: "DD MMM YYYY",
+        disable:true
+    });
 });

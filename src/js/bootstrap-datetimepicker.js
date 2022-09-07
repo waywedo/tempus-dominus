@@ -1919,12 +1919,19 @@ const dateTimePicker = function (element, options) {
          * @returns {object} picker
          */
         disable() {
-            hide();
-            if (component && component.hasClass("btn")) {
-                component.addClass("disabled");
+            if (options.inline) {
+                if (widget) {
+                    widget.find("[data-action]").addClass("disabled");
+                }
+            } else {
+                hide();
+                if (component && component.hasClass("btn")) {
+                    component.addClass("disabled");
+                }
+                input.prop("disabled", true);
             }
-            input.prop("disabled", true);
             return picker;
+
         },
 
         /**
@@ -1933,10 +1940,14 @@ const dateTimePicker = function (element, options) {
          * @returns {object} picker
          */
         enable() {
-            if (component && component.hasClass("btn")) {
-                component.removeClass("disabled");
+            if (options.inline) {
+                update();
+            } else {
+                if (component && component.hasClass("btn")) {
+                    component.removeClass("disabled");
+                }
+                input.prop("disabled", false);
             }
-            input.prop("disabled", false);
             return picker;
         },
 
@@ -2928,6 +2939,9 @@ const dateTimePicker = function (element, options) {
     }
     if (options.inline) {
         show();
+        if (options.disable) {
+            picker.disable();
+        }
     }
     return picker;
 };
